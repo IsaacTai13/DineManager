@@ -1,90 +1,75 @@
 package application;
 
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import view.CustomerOrderingPage;
+import view.KitchenManagementPage;
+import view.MenuManagementPage;
 
 public class Main extends Application {
 
-    private Scene mainScene;   // Main page
-    private Scene page1Scene;  // Page 1
-    private Scene page2Scene;  // Page 2
-    private Scene page3Scene;  // Page 3
+    private Scene mainScene;  // Main menu scene
 
     @Override
     public void start(Stage primaryStage) {
-        // -------------------------------------------------------
-        // Main page with three button
-        // -------------------------------------------------------
-        Button btn1 = new Button("");
-        Button btn2 = new Button("Go to Page 2");
-        Button btn3 = new Button("Go to Page 3");
+        // ============================================================
+        // MAIN MENU PAGE
+        // ============================================================
+        Text mainTitle = new Text("Dine Manager");
+        mainTitle.setFont(new Font("Arial", 32));
 
-        VBox mainLayout = new VBox(20, btn1, btn2, btn3);
+        Button btnCustomerOrdering = new Button("Customer Ordering");
+        Button btnKitchenManagement = new Button("Kitchen Management");
+        Button btnMenuManagement = new Button("Menu Management");
+
+        // Style buttons
+        styleButton(btnCustomerOrdering);
+        styleButton(btnKitchenManagement);
+        styleButton(btnMenuManagement);
+
+        VBox mainLayout = new VBox(20, mainTitle, btnCustomerOrdering, btnKitchenManagement, btnMenuManagement);
         mainLayout.setAlignment(Pos.CENTER);
+        mainLayout.setPadding(new Insets(40));
 
         mainScene = new Scene(mainLayout, 800, 600);
 
 
-        // -------------------------------------------------------
-        // Page 1
-        // -------------------------------------------------------
-        Button back1 = new Button("⬅ Back to Home");
-        Text p1Text = new Text("This is Page 1");
-
-        VBox page1Layout = new VBox(20, p1Text, back1);
-        page1Layout.setAlignment(Pos.CENTER);
-
-        page1Scene = new Scene(page1Layout, 800, 600);
+        // ============================================================
+        // CREATE PAGE INSTANCES
+        // ============================================================
+        CustomerOrderingPage customerOrderingPage = new CustomerOrderingPage(primaryStage, mainScene);
+        KitchenManagementPage kitchenManagementPage = new KitchenManagementPage(primaryStage, mainScene);
+        MenuManagementPage menuManagementPage = new MenuManagementPage(primaryStage, mainScene);
 
 
-        // -------------------------------------------------------
-        // Page 2
-        // -------------------------------------------------------
-        Button back2 = new Button("⬅ Back to Home");
-        Text p2Text = new Text("This is Page 2");
-
-        VBox page2Layout = new VBox(20, p2Text, back2);
-        page2Layout.setAlignment(Pos.CENTER);
-
-        page2Scene = new Scene(page2Layout, 800, 600);
+        // ============================================================
+        // BUTTON ACTIONS - Navigate to respective pages
+        // ============================================================
+        btnCustomerOrdering.setOnAction(e -> customerOrderingPage.show());
+        btnKitchenManagement.setOnAction(e -> kitchenManagementPage.show());
+        btnMenuManagement.setOnAction(e -> menuManagementPage.show());
 
 
-        // -------------------------------------------------------
-        // Page 3
-        // -------------------------------------------------------
-        Button back3 = new Button("⬅ Back to Home");
-        Text p3Text = new Text("This is Page 3");
-
-        VBox page3Layout = new VBox(20, p3Text, back3);
-        page3Layout.setAlignment(Pos.CENTER);
-
-        page3Scene = new Scene(page3Layout, 800, 600);
-
-
-        // -------------------------------------------------------
-        // Link button to respective pages
-        // -------------------------------------------------------
-        btn1.setOnAction(e -> primaryStage.setScene(page1Scene));
-        btn2.setOnAction(e -> primaryStage.setScene(page2Scene));
-        btn3.setOnAction(e -> primaryStage.setScene(page3Scene));
-
-        back1.setOnAction(e -> primaryStage.setScene(mainScene));
-        back2.setOnAction(e -> primaryStage.setScene(mainScene));
-        back3.setOnAction(e -> primaryStage.setScene(mainScene));
-
-
-        // -------------------------------------------------------
-        // Show main page
-        // -------------------------------------------------------
-        primaryStage.setTitle("Main Menu");
+        // ============================================================
+        // SHOW MAIN MENU
+        // ============================================================
+        primaryStage.setTitle("Dine Manager");
         primaryStage.setScene(mainScene);
         primaryStage.show();
+    }
+
+    // Helper method to style buttons
+    private void styleButton(Button button) {
+        button.setPrefWidth(250);
+        button.setPrefHeight(50);
+        button.setFont(new Font("Arial", 16));
     }
 
     public static void main(String[] args) {
