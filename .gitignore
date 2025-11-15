@@ -1,0 +1,15 @@
+# Mac
+.DS_Store
+*/.DS_Store
+
+# Eclipse project files
+.classpath
+.project
+.settings/
+
+# Compiled output
+bin/
+*.class
+
+# Java
+*.log
