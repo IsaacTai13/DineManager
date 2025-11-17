@@ -8,24 +8,30 @@
 package service;
 
 import model.*;
+import adt.MenuHashTable;
+import adt.OrderQueue;
 import java.util.*;
 
 /**
- * Data Manager Class (Simplified Version)
+ * Data Manager Class
  * Only responsible for declaring and storing all shared data structures
  * Specific business logic is handled by respective Service classes
+ * 
+ * Now uses generic ADT implementations:
+ * - MenuHashTable wraps HashTable<String, MenuItem>
+ * - OrderQueue wraps PriorityQueueADT<Order>
  */
 public class DataManager {
     
     // ==================== Menu-Related Data Structures ====================
     
     /**
-     * Menu HashMap
-     * Key: Menu item ID, Value: MenuItem
+     * Menu Hash Table (Generic ADT)
+     * Uses: HashTable<String, MenuItem>
      * Purpose: Fast item lookup (O(1))
      * Users: MenuService, CustomerOrderPage
      */
-    public static HashMap<String, MenuItem> menuHashMap = new HashMap<>();
+    public static MenuHashTable menuHashTable = new MenuHashTable();
     
     /**
      * Menu BST (implemented using TreeMap)
@@ -37,20 +43,16 @@ public class DataManager {
     
     // ==================== Order-Related Data Structures ====================
     
-//    /**
-//     * Order Queue (regular Queue)
-//     * Purpose: FIFO order storage
-//     * Users: OrderService, CustomerOrderPage → KitchenPage
-//     */
-//    public static Queue<Order> orderQueue = new LinkedList<>();
-    
     /**
-     * Order Priority Queue
-     * Purpose: Sort orders by priority and time
-     * Users: OrderService, KitchenPage
+     * Order Queue (Generic ADT)
+     * Uses: PriorityQueueADT<Order>
+     * Purpose: Store and manage orders with priority
+     * Features:
+     * - FIFO for same priority orders
+     * - Higher priority orders processed first
+     * - VIP (3) > Delivery (2) > Normal (1)
      */
-    public static PriorityQueue<Order> orderPriorityQueue = new PriorityQueue<>();
-    
+    public static OrderQueue orderQueue = new OrderQueue();
     
     /**
      * Order Number Counter
@@ -65,12 +67,37 @@ public class DataManager {
      * Load initial menu data
      */
     public static void initialize() {
-        System.out.println("Initializing DataManager...");
+        System.out.println("=== Initializing DataManager ===");
         
         // Load initial menu
         InitialDataLoader.loadInitialMenu();
         
         System.out.println("DataManager initialization complete!");
-        System.out.println("Current menu count: " + menuHashMap.size());
+        System.out.println("MenuHashTable size: " + menuHashTable.size());
+        System.out.println("Order queue initialized: " + orderQueue.isEmpty());
+        System.out.println("================================\n");
+    }
+    
+    // ==================== Utility Methods ====================
+    
+    /**
+     * Get order queue statistics
+     */
+    public static String getOrderQueueStatistics() {
+        return orderQueue.getQueueStatistics();
+    }
+    
+    /**
+     * Print all orders in queue (for debugging)
+     */
+    public static void printOrderQueue() {
+        orderQueue.printAllOrders();
+    }
+    
+    /**
+     * Print menu hash table (for debugging)
+     */
+    public static void printMenuHashTable() {
+        menuHashTable.printAll();
     }
 }
