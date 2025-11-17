@@ -44,6 +44,7 @@ public class CustomerOrderingPage {
         initializeUI();
     }
     
+    // Initialized page for Menu ordering
     private void initializeUI() {
         BorderPane root = new BorderPane();
         
@@ -51,16 +52,20 @@ public class CustomerOrderingPage {
         Text title = new Text("Customer Ordering System");
         title.setFont(new Font("Arial", 28));
         
+        // Back button
         Button backButton = new Button("⬅ Back to Home");
         backButton.setOnAction(e -> stage.setScene(mainScene));
         
+        // Top bar (title & back button)
         HBox topBar = new HBox();
         topBar.setPadding(new Insets(15));
         
+        // Left section
         HBox leftSection = new HBox();
         leftSection.setAlignment(Pos.CENTER_LEFT);
         leftSection.getChildren().add(backButton);
         
+        // Center section
         HBox centerSection = new HBox();
         centerSection.setAlignment(Pos.CENTER);
         centerSection.getChildren().add(title);
@@ -72,6 +77,8 @@ public class CustomerOrderingPage {
         root.setTop(topBar);
         
         // Center section - Split pane
+        // 1. left panel: Menu
+        // 2. right panel: Shopping Cart
         SplitPane splitPane = new SplitPane();
         splitPane.setDividerPositions(0.6);
         
@@ -152,6 +159,7 @@ public class CustomerOrderingPage {
         cartTable = new TableView<>();
         cartTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
+        // Item column
         TableColumn<OrderItem, String> nameCol = new TableColumn<>("Item");
         nameCol.setPrefWidth(120);
         nameCol.setCellValueFactory(cellData -> 
@@ -204,6 +212,7 @@ public class CustomerOrderingPage {
             }
         });
         
+        // Subtotal column
         TableColumn<OrderItem, String> subtotalCol = new TableColumn<>("Subtotal");
         subtotalCol.setPrefWidth(80);
         subtotalCol.setCellValueFactory(cellData -> 
@@ -216,10 +225,12 @@ public class CustomerOrderingPage {
         HBox actionButtons = new HBox(10);
         actionButtons.setAlignment(Pos.CENTER);
         
+        // Remove button
         Button removeBtn = new Button("Remove");
         removeBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
         removeBtn.setOnAction(e -> handleRemoveItem());
         
+        // Clear button
         Button clearBtn = new Button("Clear Cart");
         clearBtn.setOnAction(e -> handleClearCart());
         
@@ -247,7 +258,7 @@ public class CustomerOrderingPage {
     // ============================================================
     
     /**
-     * Load menu items from controller
+     * Load all available menu items from controller
      */
     private void loadMenuItems() {
         ObservableList<MenuItem> items = FXCollections.observableArrayList(
@@ -257,7 +268,7 @@ public class CustomerOrderingPage {
     }
     
     /**
-     * Search menu items
+     * Search menu items by keyword
      */
     private void searchMenuItems(String keyword) {
         ObservableList<MenuItem> items = FXCollections.observableArrayList(
