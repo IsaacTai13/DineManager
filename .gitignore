@@ -3,8 +3,6 @@
 */.DS_Store
 
 # Eclipse project files
-.classpath
-.project
 .settings/
 
 # Compiled output
