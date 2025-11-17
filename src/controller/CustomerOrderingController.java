@@ -207,7 +207,7 @@ public class CustomerOrderingController {
     
     
     // ============================================================
-    // ORDER MANAGEMENT - Uses DataManager
+    // ORDER MANAGEMENT - Uses OrderQueue ADT
     // ============================================================
     
     /**
@@ -227,12 +227,15 @@ public class CustomerOrderingController {
         Order order = new Order(DataManager.orderCounter, orderItems, priority);
         DataManager.orderCounter++;
         
-        // Add order to priority queue (using DataManager)
-        DataManager.orderPriorityQueue.offer(order);
+        // Add order to queue using ADT (enqueue operation)
+        boolean success = DataManager.orderQueue.enqueue(order);
         
-        System.out.println("Order created: " + order.getSummary());
-        System.out.println("Added to order queue. Current queue size: " + 
-                         DataManager.orderPriorityQueue.size());
+        if (success) {
+            System.out.println("✓ Order #" + order.getOrderNumber() + " added to queue");
+            System.out.println("  Priority: " + order.getPriorityText());
+            System.out.println("  Total: " + order.getFormattedTotalPrice());
+            System.out.println("  Current queue size: " + DataManager.orderQueue.size());
+        }
         
         // Clear cart after checkout
         clearCart();
@@ -245,6 +248,20 @@ public class CustomerOrderingController {
      */
     public Order checkout() {
         return checkout(Order.PRIORITY_NORMAL);
+    }
+    
+    /**
+     * Get current queue size
+     */
+    public int getQueueSize() {
+        return DataManager.orderQueue.size();
+    }
+    
+    /**
+     * Get all orders in queue
+     */
+    public List<Order> getAllOrdersInQueue() {
+        return DataManager.orderQueue.getAllOrders();
     }
     
     
