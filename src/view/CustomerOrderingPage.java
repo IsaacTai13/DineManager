@@ -10,98 +10,77 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import java.util.ArrayList;
-import java.util.List;
+import model.MenuItem;
+import model.Order;
+import model.OrderItem;
+import controller.CustomerOrderingController;
 
+/**
+ * Customer Ordering Page - View Layer
+ * This class only handles UI display and user interactions
+ * Business logic is delegated to CustomerOrderingController
+ */
 public class CustomerOrderingPage {
     
     private Stage stage;
     private Scene scene;
     private Scene mainScene;
     
-    // Cart data structure - List to store cart items
-    private List<CartItem> cartItems;
+    // Controller - handles all business logic
+    private CustomerOrderingController controller;
     
     // UI Components
     private TableView<MenuItem> menuTable;
-    private TableView<CartItem> cartTable;
+    private TableView<OrderItem> cartTable;
     private TextField searchField;
     private Label totalLabel;
     private Button checkoutButton;
     
-    // Constructor with stage and main scene reference
+    // Constructor
     public CustomerOrderingPage(Stage stage, Scene mainScene) {
         this.stage = stage;
         this.mainScene = mainScene;
-        this.cartItems = new ArrayList<>();
+        this.controller = new CustomerOrderingController();
         initializeUI();
     }
     
     private void initializeUI() {
-        // ============================================================
-        // MAIN LAYOUT - BorderPane
-        // ============================================================
         BorderPane root = new BorderPane();
         
-        
-        // ============================================================
-        // TOP SECTION - Title and Back Button
-        // ============================================================
+        // Top section
         Text title = new Text("Customer Ordering System");
         title.setFont(new Font("Arial", 28));
         
         Button backButton = new Button("⬅ Back to Home");
         backButton.setOnAction(e -> stage.setScene(mainScene));
         
-        // Create top bar with back button on the left, title in center
         HBox topBar = new HBox();
         topBar.setPadding(new Insets(15));
         
-        // Left section - Back button
         HBox leftSection = new HBox();
         leftSection.setAlignment(Pos.CENTER_LEFT);
         leftSection.getChildren().add(backButton);
         
-        // Center section - Title
         HBox centerSection = new HBox();
         centerSection.setAlignment(Pos.CENTER);
         centerSection.getChildren().add(title);
         
-        // Use HBox.setHgrow to make sections expand properly
         HBox.setHgrow(leftSection, Priority.NEVER);
         HBox.setHgrow(centerSection, Priority.ALWAYS);
         
         topBar.getChildren().addAll(leftSection, centerSection);
-        
         root.setTop(topBar);
         
-        
-        // ============================================================
-        // CENTER SECTION - Split Pane (Left: Menu, Right: Cart)
-        // ============================================================
+        // Center section - Split pane
         SplitPane splitPane = new SplitPane();
-        splitPane.setDividerPositions(0.6); // 60% left, 40% right
+        splitPane.setDividerPositions(0.6);
         
-        
-        // ------------------------------------------------------------
-        // LEFT SIDE - Menu Display
-        // ------------------------------------------------------------
         VBox leftPanel = createMenuPanel();
-        
-        
-        // ------------------------------------------------------------
-        // RIGHT SIDE - Shopping Cart
-        // ------------------------------------------------------------
         VBox rightPanel = createCartPanel();
-        
         
         splitPane.getItems().addAll(leftPanel, rightPanel);
         root.setCenter(splitPane);
         
-        
-        // ============================================================
-        // CREATE SCENE
-        // ============================================================
         scene = new Scene(root, 1000, 700);
     }
     
@@ -113,32 +92,31 @@ public class CustomerOrderingPage {
         VBox panel = new VBox(10);
         panel.setPadding(new Insets(15));
         
-        // Title
         Label menuTitle = new Label("Menu Items");
         menuTitle.setFont(new Font("Arial", 20));
         
-        // Search bar (optional)
+        // Search bar
         searchField = new TextField();
         searchField.setPromptText("Search for items...");
         searchField.setPrefWidth(300);
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            searchMenuItems(newVal);
+        });
         
         // Menu TableView
         menuTable = new TableView<>();
         menuTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
-        // Column 1: Item Name
         TableColumn<MenuItem, String> nameCol = new TableColumn<>("Item Name");
         nameCol.setPrefWidth(200);
         nameCol.setCellValueFactory(data -> 
             new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
         
-        // Column 2: Price
         TableColumn<MenuItem, String> priceCol = new TableColumn<>("Price");
         priceCol.setPrefWidth(100);
         priceCol.setCellValueFactory(data -> 
-            new javafx.beans.property.SimpleStringProperty("$" + data.getValue().getPrice()));
+            new javafx.beans.property.SimpleStringProperty(data.getValue().getFormattedPrice()));
         
-        // Column 3: Category
         TableColumn<MenuItem, String> categoryCol = new TableColumn<>("Category");
         categoryCol.setPrefWidth(120);
         categoryCol.setCellValueFactory(data -> 
@@ -146,14 +124,14 @@ public class CustomerOrderingPage {
         
         menuTable.getColumns().addAll(nameCol, priceCol, categoryCol);
         
-        // Load sample menu items (you can replace with real data)
-        loadSampleMenuItems();
+        // Load menu items from controller
+        loadMenuItems();
         
         // Add to Cart button
         Button addToCartBtn = new Button("Add to Cart");
         addToCartBtn.setPrefWidth(150);
         addToCartBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;");
-        addToCartBtn.setOnAction(e -> addSelectedItemToCart());
+        addToCartBtn.setOnAction(e -> handleAddToCart());
         
         panel.getChildren().addAll(menuTitle, searchField, menuTable, addToCartBtn);
         return panel;
@@ -167,7 +145,6 @@ public class CustomerOrderingPage {
         VBox panel = new VBox(10);
         panel.setPadding(new Insets(15));
         
-        // Title
         Label cartTitle = new Label("Shopping Cart");
         cartTitle.setFont(new Font("Arial", 20));
         
@@ -175,23 +152,63 @@ public class CustomerOrderingPage {
         cartTable = new TableView<>();
         cartTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
-        // Column 1: Item Name
-        TableColumn<CartItem, String> nameCol = new TableColumn<>("Item");
-        nameCol.setPrefWidth(150);
-        nameCol.setCellValueFactory(data -> 
-            new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
+        TableColumn<OrderItem, String> nameCol = new TableColumn<>("Item");
+        nameCol.setPrefWidth(120);
+        nameCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getMenuItem().getName()));
         
-        // Column 2: Quantity
-        TableColumn<CartItem, String> qtyCol = new TableColumn<>("Qty");
-        qtyCol.setPrefWidth(50);
-        qtyCol.setCellValueFactory(data -> 
-            new javafx.beans.property.SimpleStringProperty(String.valueOf(data.getValue().getQuantity())));
+        // Quantity column with +/- buttons
+        TableColumn<OrderItem, OrderItem> qtyCol = new TableColumn<>("Quantity");
+        qtyCol.setPrefWidth(120);
+        qtyCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue()));
+        qtyCol.setCellFactory(col -> new TableCell<OrderItem, OrderItem>() {
+            private final Button minusBtn = new Button("-");
+            private final Label qtyLabel = new Label();
+            private final Button plusBtn = new Button("+");
+            private final HBox container = new HBox(5);
+            
+            {
+                minusBtn.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold;");
+                plusBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+                minusBtn.setPrefWidth(30);
+                plusBtn.setPrefWidth(30);
+                qtyLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+                qtyLabel.setMinWidth(30);
+                qtyLabel.setAlignment(Pos.CENTER);
+                
+                container.setAlignment(Pos.CENTER);
+                container.getChildren().addAll(minusBtn, qtyLabel, plusBtn);
+                
+                minusBtn.setOnAction(e -> {
+                    OrderItem item = getTableView().getItems().get(getIndex());
+                    handleDecreaseQuantity(item);
+                });
+                
+                plusBtn.setOnAction(e -> {
+                    OrderItem item = getTableView().getItems().get(getIndex());
+                    handleIncreaseQuantity(item);
+                });
+            }
+            
+            @Override
+            protected void updateItem(OrderItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    qtyLabel.setText(String.valueOf(item.getQuantity()));
+                    setGraphic(container);
+                }
+            }
+        });
         
-        // Column 3: Subtotal
-        TableColumn<CartItem, String> subtotalCol = new TableColumn<>("Subtotal");
+        TableColumn<OrderItem, String> subtotalCol = new TableColumn<>("Subtotal");
         subtotalCol.setPrefWidth(80);
-        subtotalCol.setCellValueFactory(data -> 
-            new javafx.beans.property.SimpleStringProperty("$" + data.getValue().getSubtotal()));
+        subtotalCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getFormattedSubtotal()));
         
         cartTable.getColumns().addAll(nameCol, qtyCol, subtotalCol);
         
@@ -201,15 +218,15 @@ public class CustomerOrderingPage {
         
         Button removeBtn = new Button("Remove");
         removeBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
-        removeBtn.setOnAction(e -> removeSelectedItem());
+        removeBtn.setOnAction(e -> handleRemoveItem());
         
         Button clearBtn = new Button("Clear Cart");
-        clearBtn.setOnAction(e -> clearCart());
+        clearBtn.setOnAction(e -> handleClearCart());
         
         actionButtons.getChildren().addAll(removeBtn, clearBtn);
         
         // Total price label
-        totalLabel = new Label("Total: $0.00");
+        totalLabel = new Label("Total: $0");
         totalLabel.setFont(new Font("Arial", 18));
         totalLabel.setStyle("-fx-font-weight: bold;");
         
@@ -218,7 +235,7 @@ public class CustomerOrderingPage {
         checkoutButton.setPrefWidth(200);
         checkoutButton.setPrefHeight(40);
         checkoutButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px;");
-        checkoutButton.setOnAction(e -> checkout());
+        checkoutButton.setOnAction(e -> handleCheckout());
         
         panel.getChildren().addAll(cartTitle, cartTable, actionButtons, totalLabel, checkoutButton);
         return panel;
@@ -226,109 +243,137 @@ public class CustomerOrderingPage {
     
     
     // ============================================================
-    // LOAD SAMPLE MENU ITEMS (Replace with real data later)
+    // EVENT HANDLERS - Delegate to Controller
     // ============================================================
-    private void loadSampleMenuItems() {
+    
+    /**
+     * Load menu items from controller
+     */
+    private void loadMenuItems() {
         ObservableList<MenuItem> items = FXCollections.observableArrayList(
-            new MenuItem("Burger", 8.99, "Main"),
-            new MenuItem("Pizza", 12.99, "Main"),
-            new MenuItem("Pasta", 10.99, "Main"),
-            new MenuItem("Salad", 6.99, "Appetizer"),
-            new MenuItem("French Fries", 3.99, "Side"),
-            new MenuItem("Coke", 2.50, "Drink"),
-            new MenuItem("Ice Cream", 4.99, "Dessert")
+            controller.getAvailableMenuItems()
         );
         menuTable.setItems(items);
     }
     
+    /**
+     * Search menu items
+     */
+    private void searchMenuItems(String keyword) {
+        ObservableList<MenuItem> items = FXCollections.observableArrayList(
+            controller.searchMenuItems(keyword)
+        );
+        menuTable.setItems(items);
+    }
     
-    // ============================================================
-    // ADD SELECTED ITEM TO CART
-    // ============================================================
-    private void addSelectedItemToCart() {
+    /**
+     * Handle add to cart button click
+     */
+    private void handleAddToCart() {
         MenuItem selected = menuTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert("No Selection", "Please select an item from the menu.");
             return;
         }
         
-        // Check if item already in cart
-        boolean found = false;
-        for (CartItem item : cartItems) {
-            if (item.getName().equals(selected.getName())) {
-                item.increaseQuantity();
-                found = true;
-                break;
-            }
+        boolean success = controller.addToCart(selected);
+        if (success) {
+            updateCartDisplay();
+        } else {
+            showAlert("Unavailable", "This item is currently unavailable.");
         }
-        
-        // If not found, add new item to cart
-        if (!found) {
-            cartItems.add(new CartItem(selected.getName(), selected.getPrice(), 1));
-        }
-        
+    }
+    
+    /**
+     * Handle increase quantity
+     */
+    private void handleIncreaseQuantity(OrderItem item) {
+        controller.increaseQuantity(item);
         updateCartDisplay();
     }
     
+    /**
+     * Handle decrease quantity
+     */
+    private void handleDecreaseQuantity(OrderItem item) {
+        controller.decreaseQuantity(item);
+        updateCartDisplay();
+    }
     
-    // ============================================================
-    // REMOVE SELECTED ITEM FROM CART
-    // ============================================================
-    private void removeSelectedItem() {
-        CartItem selected = cartTable.getSelectionModel().getSelectedItem();
+    /**
+     * Handle remove item from cart
+     */
+    private void handleRemoveItem() {
+        OrderItem selected = cartTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert("No Selection", "Please select an item to remove.");
             return;
         }
         
-        cartItems.remove(selected);
+        controller.removeFromCart(selected);
         updateCartDisplay();
     }
     
-    
-    // ============================================================
-    // CLEAR ALL ITEMS FROM CART
-    // ============================================================
-    private void clearCart() {
-        cartItems.clear();
+    /**
+     * Handle clear cart
+     */
+    private void handleClearCart() {
+        controller.clearCart();
         updateCartDisplay();
     }
     
-    
-    // ============================================================
-    // UPDATE CART DISPLAY
-    // ============================================================
-    private void updateCartDisplay() {
-        ObservableList<CartItem> observableCart = FXCollections.observableArrayList(cartItems);
-        cartTable.setItems(observableCart);
-        
-        // Calculate total
-        double total = 0;
-        for (CartItem item : cartItems) {
-            total += item.getSubtotal();
-        }
-        totalLabel.setText(String.format("Total: $%.2f", total));
-    }
-    
-    
-    // ============================================================
-    // CHECKOUT ACTION
-    // ============================================================
-    private void checkout() {
-        if (cartItems.isEmpty()) {
-            showAlert("Empty Cart", "Your cart is empty. Please add items before checkout.");
+    /**
+     * Handle checkout
+     */
+    private void handleCheckout() {
+        // Validate checkout
+        String errorMessage = controller.validateCheckout();
+        if (errorMessage != null) {
+            showAlert("Checkout Error", errorMessage);
             return;
         }
         
-        // TODO: Implement actual checkout logic (send order to kitchen)
-        showAlert("Order Placed", "Order #001 has been sent to the kitchen!");
-        clearCart();
+        // Create order
+        Order order = controller.checkout();
+        
+        if (order != null) {
+            showAlert("Order Placed", 
+                String.format("Order #%03d has been placed successfully!\nTotal: %s", 
+                    order.getOrderNumber(), 
+                    order.getFormattedTotalPrice()));
+            updateCartDisplay();
+        } else {
+            showAlert("Checkout Failed", "Unable to process your order.");
+        }
     }
     
     
     // ============================================================
-    // UTILITY METHOD - Show Alert Dialog
+    // UI UPDATE
     // ============================================================
+    
+    /**
+     * Update cart display
+     */
+    private void updateCartDisplay() {
+        ObservableList<OrderItem> observableCart = FXCollections.observableArrayList(
+            controller.getCartItems()
+        );
+        cartTable.setItems(observableCart);
+        cartTable.refresh();
+        
+        // Update total
+        totalLabel.setText("Total: " + controller.getFormattedTotal());
+    }
+    
+    
+    // ============================================================
+    // UTILITY
+    // ============================================================
+    
+    /**
+     * Show alert dialog
+     */
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -337,55 +382,10 @@ public class CustomerOrderingPage {
         alert.showAndWait();
     }
     
-    
-    // ============================================================
-    // SHOW PAGE
-    // ============================================================
+    /**
+     * Show this page
+     */
     public void show() {
         stage.setScene(scene);
-    }
-    
-    
-    // ============================================================
-    // INNER CLASSES - Data Models
-    // ============================================================
-    
-    // MenuItem class for menu display
-    public static class MenuItem {
-        private String name;
-        private double price;
-        private String category;
-        
-        public MenuItem(String name, double price, String category) {
-            this.name = name;
-            this.price = price;
-            this.category = category;
-        }
-        
-        public String getName() { return name; }
-        public double getPrice() { return price; }
-        public String getCategory() { return category; }
-    }
-    
-    
-    // CartItem class for shopping cart
-    public static class CartItem {
-        private String name;
-        private double price;
-        private int quantity;
-        
-        public CartItem(String name, double price, int quantity) {
-            this.name = name;
-            this.price = price;
-            this.quantity = quantity;
-        }
-        
-        public String getName() { return name; }
-        public double getPrice() { return price; }
-        public int getQuantity() { return quantity; }
-        public double getSubtotal() { return price * quantity; }
-        
-        public void increaseQuantity() { quantity++; }
-        public void decreaseQuantity() { if (quantity > 1) quantity--; }
     }
 }
