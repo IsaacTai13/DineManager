@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import view.CustomerOrderingPage;
 import view.KitchenManagementPage;
 import view.MenuManagementPage;
+import service.DataManager;
 
 public class Main extends Application {
 
@@ -19,6 +20,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        // ============================================================
+        // INITIALIZE DATA MANAGER (Load initial menu data)
+        // ============================================================
+        System.out.println("=== Dine Manager Application Starting ===");
+        DataManager.initialize();
+        System.out.println("==========================================\n");
+        
+        
         // ============================================================
         // MAIN MENU PAGE
         // ============================================================
