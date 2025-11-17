@@ -1,7 +1,7 @@
 package test;
 
 import adt.MenuHashTable;
-import adt.MenuHashTableInterface;
+import adt.HashTableInterface;
 import model.MenuItem;
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class MenuHashTableTest {
     
     public static void main(String[] args) {
         // Create a new hash table instance
-        MenuHashTableInterface menuTable = new MenuHashTable();
+    	MenuHashTable menuTable = new MenuHashTable();
         
         System.out.println("=== Testing MenuHashTable ADT ===\n");
         

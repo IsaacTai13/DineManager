@@ -2,7 +2,7 @@
 // File: MenuService.java
 // Location: src/service/MenuService.java
 // Purpose: Handle all menu-related business logic
-// Responsible: Member C
+// Updated: Now uses generic MenuHashTable ADT
 // ============================================================
 
 package service;
@@ -14,6 +14,8 @@ import java.util.*;
  * Menu Service Class
  * Provides all menu-related operations
  * Includes: add, delete, update, query, search, categorize functions
+ * 
+ * Updated to use MenuHashTable ADT (generic hash table wrapper)
  */
 public class MenuService {
     
@@ -21,7 +23,7 @@ public class MenuService {
     
     /**
      * Add menu item
-     * Updates both HashMap and BST
+     * Updates both MenuHashTable ADT and BST
      * 
      * @param item Menu item to add
      * @return Whether addition was successful
@@ -32,15 +34,15 @@ public class MenuService {
             return false;
         }
         
-        // Check for duplicate ID
-        if (DataManager.menuHashMap.containsKey(item.getId())) {
+        // Check for duplicate ID using MenuHashTable ADT
+        if (DataManager.menuHashTable.containsKey(item.getId())) {
             System.err.println("Error: Menu item ID already exists: " + item.getId());
             return false;
         }
         
-        // Add to both HashMap and BST
-        DataManager.menuHashMap.put(item.getId(), item);
-        DataManager.menuBST.put(item.getPrice(), item);
+        // Add to both MenuHashTable ADT and BST
+        DataManager.menuHashTable.put(item.getId(), item);  // Hash Table ADT
+        DataManager.menuBST.put(item.getPrice(), item);     // BST for price sorting
         
         System.out.println("Successfully added menu item: " + item.getName());
         return true;
@@ -48,13 +50,14 @@ public class MenuService {
     
     /**
      * Remove menu item
-     * Removes from both HashMap and BST
+     * Removes from both MenuHashTable ADT and BST
      * 
      * @param id Menu item ID to remove
      * @return Whether removal was successful
      */
     public static boolean removeMenuItem(String id) {
-        MenuItem item = DataManager.menuHashMap.get(id);
+        // Use MenuHashTable ADT to get the item
+        MenuItem item = DataManager.menuHashTable.get(id);
         
         if (item == null) {
             System.err.println("Error: Menu item ID not found: " + id);
@@ -62,7 +65,7 @@ public class MenuService {
         }
         
         // Remove from both data structures
-        DataManager.menuHashMap.remove(id);
+        DataManager.menuHashTable.remove(id);
         DataManager.menuBST.remove(item.getPrice());
         
         System.out.println("Successfully removed menu item: " + item.getName());
@@ -78,7 +81,7 @@ public class MenuService {
      * @return Whether update was successful
      */
     public static boolean updateMenuItem(String id, MenuItem newItem) {
-        if (!DataManager.menuHashMap.containsKey(id)) {
+        if (!DataManager.menuHashTable.containsKey(id)) {
             System.err.println("Error: Menu item ID not found: " + id);
             return false;
         }
@@ -99,7 +102,7 @@ public class MenuService {
      * @return Found menu item, null if not found
      */
     public static MenuItem getMenuItemById(String id) {
-        return DataManager.menuHashMap.get(id);
+        return DataManager.menuHashTable.get(id);
     }
     
     /**
@@ -108,7 +111,7 @@ public class MenuService {
      * @return List of all menu items
      */
     public static List<MenuItem> getAllMenuItems() {
-        return new ArrayList<>(DataManager.menuHashMap.values());
+        return DataManager.menuHashTable.getAllItems();
     }
     
     /**
@@ -126,35 +129,28 @@ public class MenuService {
      * @return List of menu items sorted by price in descending order
      */
     public static List<MenuItem> getMenuByPriceDescending() {
-        List<MenuItem> items = new ArrayList<>(DataManager.menuBST.descendingMap().values());
-        return items;
+        return new ArrayList<>(DataManager.menuBST.descendingMap().values());
     }
     
-    // ==================== 搜尋方法 ====================
+    // ==================== Search Methods ====================
     
     /**
-     * 根據分類取得菜品
+     * Get menu items by category
+     * Uses MenuHashTable's built-in category filtering
      * 
-     * @param category 分類名稱（主餐/飲料/甜點）
-     * @return 該分類的所有菜品
+     * @param category Category name (Main Dish/Beverage/Dessert)
+     * @return List of all menu items in the specified category
      */
     public static List<MenuItem> getMenuByCategory(String category) {
-        List<MenuItem> result = new ArrayList<>();
-        
-        for (MenuItem item : DataManager.menuHashMap.values()) {
-            if (item.getCategory().equals(category)) {
-                result.add(item);
-            }
-        }
-        
-        return result;
+        // Use MenuHashTable's built-in method
+        return DataManager.menuHashTable.getItemsByCategory(category);
     }
     
     /**
-     * 搜尋菜品（根據名稱，支援部分比對）
+     * Search menu items by name (supports partial matching)
      * 
-     * @param keyword 搜尋關鍵字
-     * @return 符合的菜品列表
+     * @param keyword Search keyword
+     * @return List of matching menu items
      */
     public static List<MenuItem> searchMenuByName(String keyword) {
         List<MenuItem> result = new ArrayList<>();
@@ -165,7 +161,7 @@ public class MenuService {
         
         String lowerKeyword = keyword.toLowerCase().trim();
         
-        for (MenuItem item : DataManager.menuHashMap.values()) {
+        for (MenuItem item : DataManager.menuHashTable.getAllItems()) {
             if (item.getName().toLowerCase().contains(lowerKeyword)) {
                 result.add(item);
             }
@@ -175,16 +171,16 @@ public class MenuService {
     }
     
     /**
-     * 根據價格範圍查詢菜品
+     * Query menu items by price range
      * 
-     * @param minPrice 最低價格
-     * @param maxPrice 最高價格
-     * @return 價格範圍內的菜品列表
+     * @param minPrice Minimum price
+     * @param maxPrice Maximum price
+     * @return List of menu items within the price range
      */
     public static List<MenuItem> getMenuByPriceRange(double minPrice, double maxPrice) {
         List<MenuItem> result = new ArrayList<>();
         
-        // 使用 BST 的 subMap 功能（高效）
+        // Use BST's subMap function (efficient)
         NavigableMap<Double, MenuItem> subMap = 
             DataManager.menuBST.subMap(minPrice, true, maxPrice, true);
         
@@ -193,31 +189,31 @@ public class MenuService {
         return result;
     }
     
-    // ==================== 統計方法 ====================
+    // ==================== Statistics Methods ====================
     
     /**
-     * 取得菜單總數
+     * Get total menu item count
      * 
-     * @return 菜品總數量
+     * @return Total number of menu items
      */
     public static int getMenuCount() {
-        return DataManager.menuHashMap.size();
+        return DataManager.menuHashTable.size();
     }
     
     /**
-     * 取得某分類的菜品數量
+     * Get menu item count by category
      * 
-     * @param category 分類名稱
-     * @return 該分類的菜品數量
+     * @param category Category name
+     * @return Number of menu items in the specified category
      */
     public static int getMenuCountByCategory(String category) {
         return getMenuByCategory(category).size();
     }
     
     /**
-     * 取得最便宜的菜品
+     * Get the cheapest menu item
      * 
-     * @return 最便宜的菜品，如果沒有菜品則回傳 null
+     * @return The cheapest menu item, null if no items exist
      */
     public static MenuItem getCheapestItem() {
         if (DataManager.menuBST.isEmpty()) {
@@ -227,9 +223,9 @@ public class MenuService {
     }
     
     /**
-     * 取得最貴的菜品
+     * Get the most expensive menu item
      * 
-     * @return 最貴的菜品，如果沒有菜品則回傳 null
+     * @return The most expensive menu item, null if no items exist
      */
     public static MenuItem getMostExpensiveItem() {
         if (DataManager.menuBST.isEmpty()) {
@@ -239,33 +235,33 @@ public class MenuService {
     }
     
     /**
-     * 計算平均價格
+     * Calculate average price
      * 
-     * @return 所有菜品的平均價格
+     * @return Average price of all menu items
      */
     public static double getAveragePrice() {
-        if (DataManager.menuHashMap.isEmpty()) {
+        if (DataManager.menuHashTable.isEmpty()) {
             return 0;
         }
         
         double total = 0;
-        for (MenuItem item : DataManager.menuHashMap.values()) {
+        for (MenuItem item : DataManager.menuHashTable.getAllItems()) {
             total += item.getPrice();
         }
         
-        return total / DataManager.menuHashMap.size();
+        return total / DataManager.menuHashTable.size();
     }
     
-    // ==================== 驗證方法 ====================
+    // ==================== Validation Methods ====================
     
     /**
-     * 檢查菜品名稱是否重複
+     * Check if menu item name is duplicate
      * 
-     * @param name 要檢查的菜品名稱
-     * @return 如果名稱已存在回傳 true
+     * @param name Name to check
+     * @return true if name already exists
      */
     public static boolean isNameDuplicate(String name) {
-        for (MenuItem item : DataManager.menuHashMap.values()) {
+        for (MenuItem item : DataManager.menuHashTable.getAllItems()) {
             if (item.getName().equals(name)) {
                 return true;
             }
@@ -274,15 +270,15 @@ public class MenuService {
     }
     
     /**
-     * 檢查菜品名稱是否重複（排除特定 ID）
-     * 用於更新時的驗證
+     * Check if menu item name is duplicate (excluding specific ID)
+     * Used for validation during updates
      * 
-     * @param name 要檢查的菜品名稱
-     * @param excludeId 要排除的菜品 ID
-     * @return 如果名稱已存在（排除指定ID後）回傳 true
+     * @param name Name to check
+     * @param excludeId Menu item ID to exclude
+     * @return true if name already exists (after excluding specified ID)
      */
     public static boolean isNameDuplicate(String name, String excludeId) {
-        for (MenuItem item : DataManager.menuHashMap.values()) {
+        for (MenuItem item : DataManager.menuHashTable.getAllItems()) {
             if (!item.getId().equals(excludeId) && item.getName().equals(name)) {
                 return true;
             }
@@ -291,46 +287,46 @@ public class MenuService {
     }
     
     /**
-     * 驗證菜品資料是否有效
+     * Validate if menu item data is valid
      * 
-     * @param item 要驗證的菜品
-     * @return 驗證結果訊息（空字串表示驗證通過）
+     * @param item Menu item to validate
+     * @return Validation result message (empty string indicates validation passed)
      */
     public static String validateMenuItem(MenuItem item) {
         if (item == null) {
-            return "菜品不能為空";
+            return "Menu item cannot be null";
         }
         
         if (item.getId() == null || item.getId().trim().isEmpty()) {
-            return "菜品 ID 不能為空";
+            return "Menu item ID cannot be empty";
         }
         
         if (item.getName() == null || item.getName().trim().isEmpty()) {
-            return "菜品名稱不能為空";
+            return "Menu item name cannot be empty";
         }
         
         if (item.getPrice() <= 0) {
-            return "價格必須大於 0";
+            return "Price must be greater than 0";
         }
         
         if (item.getCategory() == null || item.getCategory().trim().isEmpty()) {
-            return "分類不能為空";
+            return "Category cannot be empty";
         }
         
-        return "";  // 驗證通過
+        return "";  // Validation passed
     }
     
-    // ==================== 輔助方法 ====================
+    // ==================== Helper Methods ====================
     
     /**
-     * 取得所有分類
+     * Get all categories
      * 
-     * @return 所有不重複的分類列表
+     * @return List of all unique categories
      */
     public static List<String> getAllCategories() {
         Set<String> categories = new HashSet<>();
         
-        for (MenuItem item : DataManager.menuHashMap.values()) {
+        for (MenuItem item : DataManager.menuHashTable.getAllItems()) {
             categories.add(item.getCategory());
         }
         
@@ -338,44 +334,51 @@ public class MenuService {
     }
     
     /**
-     * 檢查菜單是否為空
+     * Check if menu is empty
      * 
-     * @return 如果沒有任何菜品回傳 true
+     * @return true if no menu items exist
      */
     public static boolean isEmpty() {
-        return DataManager.menuHashMap.isEmpty();
+        return DataManager.menuHashTable.isEmpty();
     }
     
-    // ==================== 測試/除錯方法 ====================
+    // ==================== Testing/Debugging Methods ====================
     
     /**
-     * 顯示所有菜單（測試用）
+     * Display all menu items (for testing)
      */
     public static void printAllMenu() {
-        System.out.println("\n=== 所有菜單 ===");
-        if (DataManager.menuHashMap.isEmpty()) {
-            System.out.println("目前沒有菜品");
+        System.out.println("\n=== All Menu Items ===");
+        if (DataManager.menuHashTable.isEmpty()) {
+            System.out.println("No menu items currently");
             return;
         }
         
-        for (MenuItem item : DataManager.menuHashMap.values()) {
+        for (MenuItem item : DataManager.menuHashTable.getAllItems()) {
             System.out.println(item.toString());
         }
-        System.out.println("總計: " + getMenuCount() + " 項");
+        System.out.println("Total: " + getMenuCount() + " items");
     }
     
     /**
-     * 顯示按價格排序的菜單（測試用）
+     * Display menu items sorted by price (for testing)
      */
     public static void printMenuByPrice() {
-        System.out.println("\n=== 菜單（按價格排序）===");
+        System.out.println("\n=== Menu Items (Sorted by Price) ===");
         if (DataManager.menuBST.isEmpty()) {
-            System.out.println("目前沒有菜品");
+            System.out.println("No menu items currently");
             return;
         }
         
         for (MenuItem item : DataManager.menuBST.values()) {
             System.out.println(item.toString());
         }
+    }
+    
+    /**
+     * Print menu using MenuHashTable's built-in method
+     */
+    public static void printMenuHashTable() {
+        DataManager.menuHashTable.printAll();
     }
 }
