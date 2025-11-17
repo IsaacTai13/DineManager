@@ -3,7 +3,7 @@ package adt;
 import model.Order;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
+import java.util.PriorityQueue; // TODO: Do not use built-in util or collections
 
 /**
  * ADT Implementation for Order Queue
@@ -12,7 +12,7 @@ import java.util.PriorityQueue;
  */
 public class OrderQueue implements OrderQueueInterface {
     
-    // Internal priority queue using Java's PriorityQueue
+    // TODO: Do not use: Internal priority queue using Java's PriorityQueue
     // Orders are automatically sorted by priority (high to low) and time (early to late)
     private PriorityQueue<Order> queue;
     
