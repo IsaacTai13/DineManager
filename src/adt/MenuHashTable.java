@@ -6,26 +6,28 @@ import java.util.List;
 
 /**
  * Specialized Hash Table for MenuItem objects
- * Wraps the generic HashTable<String, MenuItem> and provides
- * menu-specific operations
+ * Why MenuHashTable: 
+ * 1.	Wraps the generic MyHashTable<String, MenuItem> and provides
+ * 		menu-specific operations 
+ * 2. 	Add more menu-specific operations for class MenuHashTable
  */
 public class MenuHashTable {
     
     // Internal generic hash table
-    private HashTable<String, MenuItem> table;
+    private MyHashTable<String, MenuItem> table;
     
     /**
      * Constructor - Initialize empty menu hash table
      */
     public MenuHashTable() {
-        this.table = new HashTable<>();
+        this.table = new MyHashTable<>();
     }
     
     /**
      * Constructor with initial capacity
      */
     public MenuHashTable(int initialCapacity) {
-        this.table = new HashTable<>(initialCapacity);
+        this.table = new MyHashTable<>(initialCapacity);
     }
     
     
@@ -90,7 +92,7 @@ public class MenuHashTable {
     }
     
     /**
-     * Get menu items by category
+     * Get all menu items by category
      */
     public List<MenuItem> getItemsByCategory(String category) {
         List<MenuItem> result = new ArrayList<>();
@@ -109,7 +111,7 @@ public class MenuHashTable {
     }
     
     /**
-     * Get available items by category
+     * Get only available menu items by category
      */
     public List<MenuItem> getAvailableItemsByCategory(String category) {
         List<MenuItem> result = new ArrayList<>();
