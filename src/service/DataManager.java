@@ -17,6 +17,8 @@ import java.util.*;
  * Data Manager Class
  * Only responsible for declaring and storing all shared data structures
  * Specific business logic is handled by respective Service classes
+ * 1. share all menu items in "DataManager.menuHashTable"
+ * 2. share all orders in "DataManager.orderQueue"
  * 
  * Now uses generic ADT implementations:
  * - MenuHashTable wraps HashTable<String, MenuItem>
@@ -29,7 +31,9 @@ public class DataManager {
     /**
      * Menu Hash Table (Generic ADT)
      * Uses: HashTable<String, MenuItem>
-     * Purpose: Fast item lookup (O(1))
+     * Purpose:
+     * 		1.	store all menu items, could be CRUD by all service
+     * 		2. 	fast item lookup (O(1))
      * Users: MenuService, CustomerOrderPage
      */
     public static MenuHashTable menuHashTable = new MenuHashTable();
