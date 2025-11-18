@@ -44,7 +44,8 @@ public class MenuManagementPage {
         initializeUI();
     }
     
-    private void initializeUI() {
+    @SuppressWarnings("unchecked")
+	private void initializeUI() {
         BorderPane mainLayout = new BorderPane();
         
         // ============================================================
@@ -148,7 +149,6 @@ public class MenuManagementPage {
         colDescription.setPrefWidth(250);
         
         tableView.getColumns().addAll(colId, colName, colPrice, colCategory, colDescription);
-        
         
         // Click event - fill form with selected item
         tableView.setOnMouseClicked(e -> {
@@ -317,10 +317,6 @@ public class MenuManagementPage {
     // ============================================================
     // PUBLIC ACCESSOR METHODS
     // ============================================================
-    
-    public Scene getScene() {
-        return scene;
-    }
     
     public void show() {
         refreshTable(controller.getAllMenuItems());

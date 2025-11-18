@@ -10,6 +10,7 @@ package service;
 import model.*;
 import adt.MenuHashTable;
 import adt.OrderQueue;
+import adt.MenuBST;
 import java.util.*;
 
 /**
@@ -34,12 +35,12 @@ public class DataManager {
     public static MenuHashTable menuHashTable = new MenuHashTable();
     
     /**
-     * Menu BST (implemented using TreeMap)
+     * Menu BST (implemented using BST)
      * Key: Price, Value: MenuItem
      * Purpose: Automatic sorting by price
      * Users: MenuService, MenuManagementPage
      */
-    public static TreeMap<Double, MenuItem> menuBST = new TreeMap<>();
+    public static MenuBST menuBST = new MenuBST();
     
     // ==================== Order-Related Data Structures ====================
     

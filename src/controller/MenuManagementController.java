@@ -1,10 +1,3 @@
-// ============================================================
-// File: MenuManagementController.java
-// Location: src/controller/MenuManagementController.java
-// Purpose: Handle all business logic for menu management
-// Responsible: Member C
-// ============================================================
-
 package controller;
 
 import model.MenuItem;
@@ -14,10 +7,6 @@ import service.MenuSortingService.SortResult;
 import view.MenuManagementPage;
 import java.util.List;
 
-/**
- * Controller for Menu Management
- * Handles all CRUD operations and sorting logic
- */
 public class MenuManagementController {
     
     private MenuManagementPage page;
@@ -62,8 +51,7 @@ public class MenuManagementController {
     /**
      * Handle updating existing menu item
      */
-    public void handleUpdate(MenuItem selectedItem, String id, String name, String priceText, 
-                            String category, String description) {
+    public void handleUpdate(MenuItem selectedItem, String id, String name, String priceText, String category, String description) {
         // Check if item is selected
         if (selectedItem == null) {
             page.showAlert("Error", "Please select an item to update", "WARNING");
@@ -80,10 +68,8 @@ public class MenuManagementController {
         // Parse price
         double price = Double.parseDouble(priceText);
         
-        // Create updated menu item
+        // Create new item to update
         MenuItem updatedItem = new MenuItem(id, name, price, category, description);
-        
-        // Update via service
         boolean success = MenuService.updateMenuItem(selectedItem.getId(), updatedItem);
         
         if (success) {
@@ -128,9 +114,6 @@ public class MenuManagementController {
     // SORTING OPERATION
     // ============================================================
     
-    /**
-     * Handle sorting menu items
-     */
     public void handleSort(String sortOption) {
         SortResult result;
         
@@ -167,43 +150,27 @@ public class MenuManagementController {
     // VALIDATION
     // ============================================================
     
-    /**
-     * Validate input fields
-     * @return Empty string if valid, error message otherwise
-     */
     private String validateInput(String id, String name, String priceText) {
-        if (id == null || id.trim().isEmpty()) {
-            return "ID cannot be empty";
-        }
         
-        if (name == null || name.trim().isEmpty()) {
-            return "Name cannot be empty";
-        }
-        
-        if (priceText == null || priceText.trim().isEmpty()) {
-            return "Price cannot be empty";
-        }
+    	if (id == null || id.trim().isEmpty()) return "ID cannot be empty";
+        if (name == null || name.trim().isEmpty()) return "Name cannot be empty";       
+        if (priceText == null || priceText.trim().isEmpty()) return "Price cannot be empty";
         
         try {
             double price = Double.parseDouble(priceText.trim());
-            if (price <= 0) {
-                return "Price must be greater than 0";
-            }
+            if (price <= 0) return "Price must be greater than 0";
         } catch (NumberFormatException e) {
             return "Price must be a valid number";
         }
         
-        return "";  // Valid
+        return "";
     }
     
     // ============================================================
     // DATA RETRIEVAL
     // ============================================================
     
-    /**
-     * Get all menu items for initial display
-     */
     public List<MenuItem> getAllMenuItems() {
-        return MenuService.getAllMenuItems();
+    	return MenuService.getMenuByPrice();
     }
 }
