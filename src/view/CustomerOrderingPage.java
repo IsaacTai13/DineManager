@@ -13,15 +13,8 @@ import javafx.collections.ObservableList;
 import model.MenuItem;
 import model.Order;
 import model.OrderItem;
-
-import java.lang.classfile.Label;
-import java.util.List;
-
-import javax.swing.table.TableColumn;
-import javax.swing.text.TableView;
-import javax.swing.text.TableView.TableCell;
-
 import controller.CustomerOrderingController;
+import java.util.List;
 
 /**
  * Customer Ordering Page - View Layer
@@ -133,17 +126,18 @@ public class CustomerOrderingPage {
 
         TableColumn<MenuItem, String> nameCol = new TableColumn<>("Item Name");
         nameCol.setPrefWidth(200);
-        nameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
+        nameCol.setCellValueFactory(data -> 
+            new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
 
         TableColumn<MenuItem, String> priceCol = new TableColumn<>("Price");
         priceCol.setPrefWidth(100);
-        priceCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getFormattedPrice()));
+        priceCol.setCellValueFactory(data -> 
+            new javafx.beans.property.SimpleStringProperty(data.getValue().getFormattedPrice()));
 
         TableColumn<MenuItem, String> categoryCol = new TableColumn<>("Category");
         categoryCol.setPrefWidth(120);
-        categoryCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getCategory()));
+        categoryCol.setCellValueFactory(data -> 
+            new javafx.beans.property.SimpleStringProperty(data.getValue().getCategory()));
 
         menuTable.getColumns().addAll(nameCol, priceCol, categoryCol);
 
@@ -177,13 +171,15 @@ public class CustomerOrderingPage {
         // Item column
         TableColumn<OrderItem, String> nameCol = new TableColumn<>("Item");
         nameCol.setPrefWidth(120);
-        nameCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+        nameCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
                 cellData.getValue().getMenuItem().getName()));
 
         // Quantity column with +/- buttons
         TableColumn<OrderItem, OrderItem> qtyCol = new TableColumn<>("Quantity");
         qtyCol.setPrefWidth(120);
-        qtyCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue()));
+        qtyCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue()));
         qtyCol.setCellFactory(col -> new TableCell<OrderItem, OrderItem>() {
             private final Button minusBtn = new Button("-");
             private final Label qtyLabel = new Label();
@@ -228,7 +224,8 @@ public class CustomerOrderingPage {
         // Subtotal column
         TableColumn<OrderItem, String> subtotalCol = new TableColumn<>("Subtotal");
         subtotalCol.setPrefWidth(80);
-        subtotalCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+        subtotalCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
                 cellData.getValue().getFormattedSubtotal()));
 
         cartTable.getColumns().addAll(nameCol, qtyCol, subtotalCol);
