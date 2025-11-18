@@ -1,7 +1,6 @@
 package test;
 
 import adt.OrderQueue;
-import adt.OrderQueueInterface;
 import model.MenuItem;
 import model.Order;
 import model.OrderItem;
@@ -18,7 +17,7 @@ public class OrderQueueTest {
         System.out.println("=== Testing OrderQueue ADT ===\n");
         
         // Create queue instance
-        OrderQueueInterface queue = new OrderQueue();
+        OrderQueue queue = new OrderQueue();
         
         
         // ============================================================
