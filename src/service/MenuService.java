@@ -42,7 +42,7 @@ public class MenuService {
         
         // Add to both MenuHashTable ADT and BST
         DataManager.menuHashTable.put(item.getId(), item);  // Hash Table ADT
-        DataManager.menuBST.put(item.getPrice(), item);     // BST for price sorting
+        DataManager.menuBST.insert(item);     // BST for price sorting
         
         System.out.println("Successfully added menu item: " + item.getName());
         return true;
@@ -66,7 +66,7 @@ public class MenuService {
         
         // Remove from both data structures
         DataManager.menuHashTable.remove(id);
-        DataManager.menuBST.remove(item.getPrice());
+        DataManager.menuBST.delete(item);
         
         System.out.println("Successfully removed menu item: " + item.getName());
         return true;
@@ -120,7 +120,7 @@ public class MenuService {
      * @return List of menu items sorted by price
      */
     public static List<MenuItem> getMenuByPrice() {
-        return new ArrayList<>(DataManager.menuBST.values());
+    	return DataManager.menuBST.getAllByPrice();
     }
     
     /**
@@ -129,7 +129,7 @@ public class MenuService {
      * @return List of menu items sorted by price in descending order
      */
     public static List<MenuItem> getMenuByPriceDescending() {
-        return new ArrayList<>(DataManager.menuBST.descendingMap().values());
+    	return DataManager.menuBST.getAllByPriceDescending();
     }
     
     // ==================== Search Methods ====================
@@ -179,15 +179,7 @@ public class MenuService {
      * @return List of menu items within the price range
      */
     public static List<MenuItem> getMenuByPriceRange(double minPrice, double maxPrice) {
-        List<MenuItem> result = new ArrayList<>();
-        
-        // Use BST's subMap function (efficient)
-        NavigableMap<Double, MenuItem> subMap = 
-            DataManager.menuBST.subMap(minPrice, true, maxPrice, true);
-        
-        result.addAll(subMap.values());
-        
-        return result;
+    	return DataManager.menuBST.rangeSearch(minPrice, maxPrice);
     }
     
     // ==================== Statistics Methods ====================
@@ -217,10 +209,7 @@ public class MenuService {
      * @return The cheapest menu item, null if no items exist
      */
     public static MenuItem getCheapestItem() {
-        if (DataManager.menuBST.isEmpty()) {
-            return null;
-        }
-        return DataManager.menuBST.firstEntry().getValue();
+    	return DataManager.menuBST.findMin();
     }
     
     /**
@@ -229,10 +218,7 @@ public class MenuService {
      * @return The most expensive menu item, null if no items exist
      */
     public static MenuItem getMostExpensiveItem() {
-        if (DataManager.menuBST.isEmpty()) {
-            return null;
-        }
-        return DataManager.menuBST.lastEntry().getValue();
+    	return DataManager.menuBST.findMax();
     }
     
     /**
@@ -371,7 +357,7 @@ public class MenuService {
             return;
         }
         
-        for (MenuItem item : DataManager.menuBST.values()) {
+        for (MenuItem item : DataManager.menuBST.inorderTraversal()) {
             System.out.println(item.toString());
         }
     }
