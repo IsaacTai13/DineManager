@@ -161,6 +161,7 @@ public class MenuService {
         
         String lowerKeyword = keyword.toLowerCase().trim();
         
+        // Filter items with keyword
         for (MenuItem item : DataManager.menuHashTable.getAllItems()) {
             if (item.getName().toLowerCase().contains(lowerKeyword)) {
                 result.add(item);
