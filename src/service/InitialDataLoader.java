@@ -1,43 +1,18 @@
-// ============================================================
-// File: InitialDataLoader.java
-// Location: src/service/InitialDataLoader.java
-// Purpose: Load initial data (default menu) for the system
-// Responsible: Member C
-// ============================================================
-
 package service;
 
 import model.MenuItem;
 
-/**
- * Initial Data Loader
- * Responsible for creating default menu data when system starts
- * Convenient for testing and demo
- */
+// Initial Data Loader for Menu
 public class InitialDataLoader {
     
-    /**
-     * Load initial menu
-     * Create default menu items
-     */
     public static void loadInitialMenu() {
-        System.out.println("Loading initial menu...");
-        
-        // Load main dishes
-        loadMainDishes();
-        
-        // Load beverages
+    	loadMainDishes();
         loadDrinks();
-        
-        // Load desserts
-        loadDesserts();
-        
+        loadDesserts();      
         System.out.println("Initial menu loaded! Total " + MenuService.getMenuCount() + " items");
     }
     
-    /**
-     * Load main dishes
-     */
+
     private static void loadMainDishes() {
         MenuService.addMenuItem(
             new MenuItem("M001", "Classic Beef Burger", 150, "Main Dish", "100% pure beef with fresh vegetables")
@@ -68,9 +43,7 @@ public class InitialDataLoader {
         );
     }
     
-    /**
-     * Load beverages
-     */
+
     private static void loadDrinks() {
         MenuService.addMenuItem(
             new MenuItem("D001", "Coca Cola", 30, "Beverage", "Cold and refreshing")
@@ -97,9 +70,7 @@ public class InitialDataLoader {
         );
     }
     
-    /**
-     * Load desserts
-     */
+    
     private static void loadDesserts() {
         MenuService.addMenuItem(
             new MenuItem("S001", "Chocolate Ice Cream", 60, "Dessert", "Belgian chocolate")
@@ -120,27 +91,5 @@ public class InitialDataLoader {
         MenuService.addMenuItem(
             new MenuItem("S005", "Caramel Pudding", 65, "Dessert", "Handmade")
         );
-    }
-    
-    /**
-     * Load simplified test menu (only a few items)
-     * For quick testing
-     */
-    public static void loadTestMenu() {
-        System.out.println("Loading test menu...");
-        
-        MenuService.addMenuItem(
-            new MenuItem("M001", "Burger", 100, "Main Dish")
-        );
-        
-        MenuService.addMenuItem(
-            new MenuItem("D001", "Coke", 30, "Beverage")
-        );
-        
-        MenuService.addMenuItem(
-            new MenuItem("S001", "Ice Cream", 50, "Dessert")
-        );
-        
-        System.out.println("Test menu loaded! Total " + MenuService.getMenuCount() + " items");
     }
 }
