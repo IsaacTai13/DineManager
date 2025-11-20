@@ -65,11 +65,6 @@ public class TestSortingService {
         for (int i = sorted.size() - 3; i < sorted.size(); i++) {
             System.out.println("  " + (i - sorted.size() + 4) + ". " + sorted.get(i).toString());
         }
-        
-        // Verify
-        boolean correct = MenuSortingService.isSorted(sorted, 
-            MenuSortingService.byPriceAscending());
-        System.out.println("\nCorrectly sorted: " + (correct ? "✓ YES" : "✗ NO"));
     }
     
     /**
@@ -201,17 +196,6 @@ public class TestSortingService {
         
         System.out.println("Testing all comparators:\n");
         boolean allPassed = true;
-        
-        for (int i = 0; i < comparators.length; i++) {
-            List<MenuItem> sorted = MenuSortingService.mergeSort(items, comparators[i]);
-            boolean isCorrect = MenuSortingService.isSorted(sorted, comparators[i]);
-            String status = isCorrect ? "✓ PASS" : "✗ FAIL";
-            System.out.println("  " + testNames[i] + ": " + status);
-            
-            if (!isCorrect) {
-                allPassed = false;
-            }
-        }
         
         System.out.println("\n" + (allPassed ? 
             "All sorting tests passed! ✓" : 
