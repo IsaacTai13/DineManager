@@ -228,7 +228,7 @@ public class CustomerOrderingController {
         DataManager.orderCounter++;
         
         // Add order to queue using ADT (enqueue operation)
-        boolean success = DataManager.orderQueue.enqueue(order);
+        boolean success = DataManager.orderQueue.add(order);
         
         if (success) {
             System.out.println("✓ Order #" + order.getOrderNumber() + " added to queue");
@@ -236,6 +236,8 @@ public class CustomerOrderingController {
             System.out.println("  Total: " + order.getFormattedTotalPrice());
             System.out.println("  Current queue size: " + DataManager.orderQueue.size());
         }
+
+        DataManager.orderQueue.printAllOrders();
         
         // Clear cart after checkout
         clearCart();
@@ -248,20 +250,6 @@ public class CustomerOrderingController {
      */
     public Order checkout() {
         return checkout(Order.PRIORITY_NORMAL);
-    }
-    
-    /**
-     * Get current queue size
-     */
-    public int getQueueSize() {
-        return DataManager.orderQueue.size();
-    }
-    
-    /**
-     * Get all orders in queue
-     */
-    public List<Order> getAllOrdersInQueue() {
-        return DataManager.orderQueue.getAllOrders();
     }
     
     

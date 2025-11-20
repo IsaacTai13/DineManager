@@ -20,18 +20,19 @@ public class Order implements Comparable<Order> {
     private List<OrderItem> items;              // Order item list
     private double totalPrice;                  // Total price
     private LocalDateTime timestamp;            // Order timestamp
-    private int priority;                       // Priority (1=Normal, 2=Delivery, 3=VIP)
+    private int priority;                       // Priority (1=VIP, 2=Delivery, 3=Normal)
     private String status;                      // Status (waiting/cooking/done)
     
     // Priority constants
-    public static final int PRIORITY_NORMAL = 1;      // Normal order
+    public static final int PRIORITY_NORMAL = 3;      // Normal order
     public static final int PRIORITY_DELIVERY = 2;    // Delivery order
-    public static final int PRIORITY_VIP = 3;         // VIP order
+    public static final int PRIORITY_VIP = 1;         // VIP order
     
     // Status constants
     public static final String STATUS_WAITING = "waiting";    // Waiting
     public static final String STATUS_COOKING = "cooking";    // Cooking
     public static final String STATUS_DONE = "done";          // Done
+    public static final String STATUS_CANCELLED = "cancelled"; // Cancelled
     
     /**
      * Full constructor
@@ -234,19 +235,23 @@ public class Order implements Comparable<Order> {
     // ==================== Comparable Interface Implementation ====================
     
     /**
-     * Comparison method for PriorityQueue sorting
-     * Sorting rules:
-     * 1. Higher priority comes first (3 > 2 > 1)
-     * 2. If same priority, earlier time comes first
+     * Comparison method for PriorityQueue
+     *
+     * <p>Comparison Rules:</p>
+     *  <ol>
+     *      <li>Higher priority (lower number) comes first</li>
+     *      <li>If same priority, earlier timestamp comes first</li>
+     *  </ol>
+     *
+     * @param other - the other Order to compare to
+     * @return negative if this < other, positive if this > other, zero if equal
      */
     @Override
     public int compareTo(Order other) {
-        // First compare priority (descending, higher priority first)
         if (this.priority != other.priority) {
-            return Integer.compare(other.priority, this.priority);
+            return Integer.compare(this.priority, other.priority);
+        } else {
+            return this.timestamp.compareTo(other.timestamp);
         }
-        
-        // If same priority, compare time (ascending, earlier time first)
-        return this.timestamp.compareTo(other.timestamp);
     }
 }
