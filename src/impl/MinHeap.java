@@ -1,6 +1,6 @@
-package adt;
+package impl;
 
-import model.Order;
+import adt.HeapADT;
 
 import java.util.ArrayList;
 
@@ -38,15 +38,15 @@ import java.util.ArrayList;
  *
  * @author tisaac
  */
-public class ArrayMenuHeap<T extends Comparable<T>> implements MenuHeap<T> {
-    private ArrayList<T> heap;
+public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
+    private ArrayList<T> elements; // I named it elements instead of heap because heap is entire class, arraylist is just the storage
     private int size;
 
     /**
      * Constructor - Initialize empty heap
      */
-    public ArrayMenuHeap() {
-        this.heap = new ArrayList<>();
+    public MinHeap() {
+        this.elements = new ArrayList<>();
         this.size = 0;
     }
 
@@ -58,7 +58,7 @@ public class ArrayMenuHeap<T extends Comparable<T>> implements MenuHeap<T> {
      */
     @Override
     public void insert(T item) {
-        heap.add(item);
+        elements.add(item);
         size++;
         heapifyUp(size - 1);
     }
@@ -75,9 +75,9 @@ public class ArrayMenuHeap<T extends Comparable<T>> implements MenuHeap<T> {
 
         // using get first is mandatory, if you use remove first, ArrayList will shift elements left
         // and mess up the order, so we first get the root element do the swap, then remove last element
-        T root = heap.get(0);
-        heap.set(0, heap.get(size - 1)); // move last element to root
-        heap.remove(size - 1); // remove last element
+        T root = elements.get(0);
+        elements.set(0, elements.get(size - 1)); // move last element to root
+        elements.remove(size - 1); // remove last element
         size--;
         heapifyDown(0);
         return root;
@@ -90,7 +90,7 @@ public class ArrayMenuHeap<T extends Comparable<T>> implements MenuHeap<T> {
     @Override
     public T peek() {
         if (size == 0) return null;
-        return heap.get(0);
+        return elements.get(0);
     }
 
     @Override
@@ -112,11 +112,11 @@ public class ArrayMenuHeap<T extends Comparable<T>> implements MenuHeap<T> {
         // find parent index with (index - 1) / 2 formula
         int parentIndex = (index - 1) / 2;
 
-        while (index > 0 && heap.get(index).compareTo(heap.get(parentIndex)) < 0) {
+        while (index > 0 && elements.get(index).compareTo(elements.get(parentIndex)) < 0) {
             // swap
-            T temp = heap.get(index);
-            heap.set(index, heap.get(parentIndex));
-            heap.set(parentIndex, temp);
+            T temp = elements.get(index);
+            elements.set(index, elements.get(parentIndex));
+            elements.set(parentIndex, temp);
 
             index = parentIndex;
             parentIndex = (index - 1) / 2;
@@ -137,24 +137,24 @@ public class ArrayMenuHeap<T extends Comparable<T>> implements MenuHeap<T> {
         while (leftChildIndex < size) {
 
             // find smallest among index, left child, right child (left first)
-            if (heap.get(leftChildIndex).compareTo(heap.get(smallestIndex)) < 0) {
+            if (elements.get(leftChildIndex).compareTo(elements.get(smallestIndex)) < 0) {
                 smallestIndex = leftChildIndex;
             }
 
             // then check right child if exists and compare to current smallest
             // cause when performing heapify down, root will be swapped with smallest child
-            if (rightChildIndex < size && heap.get(rightChildIndex).compareTo(heap.get(smallestIndex)) < 0) {
+            if (rightChildIndex < size && elements.get(rightChildIndex).compareTo(elements.get(smallestIndex)) < 0) {
                 smallestIndex = rightChildIndex;
             }
 
             if (smallestIndex == index) return; // heap property satisfied
 
             // swap
-            T temp = heap.get(index);
-            heap.set(index, heap.get(smallestIndex));
-            heap.set(smallestIndex, temp);
+            T temp = elements.get(index);
+            elements.set(index, elements.get(smallestIndex));
+            elements.set(smallestIndex, temp);
 
-            // move current index to smallest index and continue heapifying down
+            // move current index to the smallest index and continue heapifying down
             index = smallestIndex;
             leftChildIndex = 2 * index + 1;
         }

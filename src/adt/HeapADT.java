@@ -7,7 +7,7 @@ package adt;
  * This interface is for priority queue operations using a heap data structure.
  * @author tisaac
  */
-public interface MenuHeap<T extends Comparable<T>> {
+public interface HeapADT<T extends Comparable<T>> {
     public void insert(T item);
     public T removeMin();
     public T peek();
