@@ -19,9 +19,6 @@ public class MenuManagementController {
     // CRUD OPERATIONS
     // ============================================================
     
-    /**
-     * Handle adding new menu item
-     */
     public void handleAdd(String id, String name, String priceText, String category, String description) {
         // Validate input
         String validation = validateInput(id, name, priceText);
@@ -30,13 +27,10 @@ public class MenuManagementController {
             return;
         }
         
-        // Parse price
         double price = Double.parseDouble(priceText);
         
-        // Create new menu item
+        // Add new menu item
         MenuItem newItem = new MenuItem(id, name, price, category, description);
-        
-        // Add to service
         boolean success = MenuService.addMenuItem(newItem);
         
         if (success) {
@@ -48,9 +42,6 @@ public class MenuManagementController {
         }
     }
     
-    /**
-     * Handle updating existing menu item
-     */
     public void handleUpdate(MenuItem selectedItem, String id, String name, String priceText, String category, String description) {
         // Check if item is selected
         if (selectedItem == null) {
@@ -65,7 +56,6 @@ public class MenuManagementController {
             return;
         }
         
-        // Parse price
         double price = Double.parseDouble(priceText);
         
         // Create new item to update
@@ -81,9 +71,6 @@ public class MenuManagementController {
         }
     }
     
-    /**
-     * Handle deleting menu item
-     */
     public void handleDelete(MenuItem selectedItem) {
         // Check if item is selected
         if (selectedItem == null) {
@@ -111,7 +98,7 @@ public class MenuManagementController {
     }
     
     // ============================================================
-    // SORTING OPERATION
+    // SORTING
     // ============================================================
     
     public void handleSort(String sortOption) {

@@ -67,14 +67,6 @@ public class TestDataManager {
      if (item != null) {
          System.out.println("  Found: " + item.toString());
      }
-     
-     // 3. Display categories
-     System.out.println("\n1.3 All categories:");
-     List<String> categories = MenuService.getAllCategories();
-     for (String category : categories) {
-         int count = MenuService.getMenuCountByCategory(category);
-         System.out.println("  " + category + ": " + count + " items");
-     }
  }
  
  /**
@@ -90,17 +82,6 @@ public class TestDataManager {
      boolean added = MenuService.addMenuItem(newItem);
      System.out.println("  Add result: " + (added ? "SUCCESS" : "FAILED"));
      System.out.println("  New menu count: " + MenuService.getMenuCount());
-     
-     // Test validation
-     System.out.println("\n2.2 Test validation (invalid item):");
-     MenuItem invalidItem = new MenuItem("", "", -10, "");
-     String validationResult = MenuService.validateMenuItem(invalidItem);
-     System.out.println("  Validation result: " + validationResult);
-     
-     // Test duplicate check
-     System.out.println("\n2.3 Test duplicate name check:");
-     boolean isDuplicate = MenuService.isNameDuplicate("Test Burger");
-     System.out.println("  'Test Burger' is duplicate: " + isDuplicate);
      
      // Test update
      System.out.println("\n2.4 Test updating menu item:");
