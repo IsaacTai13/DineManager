@@ -1,6 +1,6 @@
 package test;
 
-import adt.OrderQueue;
+import service.OrderQueue;
 import model.MenuItem;
 import model.Order;
 import model.OrderItem;
@@ -21,18 +21,18 @@ public class OrderQueueTest {
         
         
         // ============================================================
-        // Test 1: Basic Enqueue/Dequeue
+        // Test 1: Basic add/Dequeue
         // ============================================================
-        System.out.println("Test 1: Basic Enqueue/Dequeue Operations");
+        System.out.println("Test 1: Basic add/Dequeue Operations");
         
         // Create sample orders
         Order order1 = createSampleOrder(1, Order.PRIORITY_NORMAL);
         Order order2 = createSampleOrder(2, Order.PRIORITY_NORMAL);
         Order order3 = createSampleOrder(3, Order.PRIORITY_NORMAL);
         
-        queue.enqueue(order1);
-        queue.enqueue(order2);
-        queue.enqueue(order3);
+        queue.add(order1);
+        queue.add(order2);
+        queue.add(order3);
         
         System.out.println("Queue size: " + queue.size());
         System.out.println();
@@ -47,9 +47,9 @@ public class OrderQueueTest {
         Order deliveryOrder = createSampleOrder(5, Order.PRIORITY_DELIVERY);
         Order vipOrder = createSampleOrder(6, Order.PRIORITY_VIP);
         
-        queue.enqueue(normalOrder);
-        queue.enqueue(deliveryOrder);
-        queue.enqueue(vipOrder);
+        queue.add(normalOrder);
+        queue.add(deliveryOrder);
+        queue.add(vipOrder);
         
         System.out.println("Added orders with different priorities");
         System.out.println("Queue size: " + queue.size());
@@ -76,7 +76,7 @@ public class OrderQueueTest {
         System.out.println("Processing orders in priority order:");
         int count = 1;
         while (!queue.isEmpty()) {
-            Order order = queue.dequeue();
+            Order order = queue.poll();
             System.out.println(count + ". " + order.getSummary() + 
                              " [Priority: " + order.getPriorityText() + "]");
             count++;
@@ -96,9 +96,9 @@ public class OrderQueueTest {
         Order cooking = createSampleOrder(12, Order.PRIORITY_DELIVERY);
         cooking.setStatus(Order.STATUS_COOKING);
         
-        queue.enqueue(waiting1);
-        queue.enqueue(waiting2);
-        queue.enqueue(cooking);
+        queue.add(waiting1);
+        queue.add(waiting2);
+        queue.add(cooking);
         
         System.out.println("Total orders: " + queue.size());
         
@@ -123,10 +123,9 @@ public class OrderQueueTest {
         boolean updated = queue.updateOrderStatus(10, Order.STATUS_COOKING);
         System.out.println("Update order #10 status: " + updated);
         
-        // Remove order
-        boolean removed = queue.removeOrder(11);
-        System.out.println("Remove order #11: " + removed);
-        System.out.println("Queue size after removal: " + queue.size());
+        // Cancel order
+        Order canceledOrder = queue.cancelOrder(11);
+        System.out.println("canceledOrder order #11: " + canceledOrder.getStatus());
         System.out.println();
         
         
@@ -148,10 +147,10 @@ public class OrderQueueTest {
         System.out.println("Test 8: Queue Statistics");
         
         // Add variety of orders
-        queue.enqueue(createSampleOrder(20, Order.PRIORITY_NORMAL));
-        queue.enqueue(createSampleOrder(21, Order.PRIORITY_VIP));
-        queue.enqueue(createSampleOrder(22, Order.PRIORITY_DELIVERY));
-        queue.enqueue(createSampleOrder(23, Order.PRIORITY_NORMAL));
+        queue.add(createSampleOrder(20, Order.PRIORITY_NORMAL));
+        queue.add(createSampleOrder(21, Order.PRIORITY_VIP));
+        queue.add(createSampleOrder(22, Order.PRIORITY_DELIVERY));
+        queue.add(createSampleOrder(23, Order.PRIORITY_NORMAL));
         
         // Update some statuses
         queue.updateOrderStatus(20, Order.STATUS_COOKING);

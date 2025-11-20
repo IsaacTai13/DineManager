@@ -3,6 +3,7 @@ package impl;
 import adt.HeapADT;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of the MenuHeap interface using an array-based data structure.
@@ -158,5 +159,9 @@ public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
             index = smallestIndex;
             leftChildIndex = 2 * index + 1;
         }
+    }
+
+    public List<T> toList() {
+        return new ArrayList<>(elements);
     }
 }

@@ -32,6 +32,7 @@ public class Order implements Comparable<Order> {
     public static final String STATUS_WAITING = "waiting";    // Waiting
     public static final String STATUS_COOKING = "cooking";    // Cooking
     public static final String STATUS_DONE = "done";          // Done
+    public static final String STATUS_CANCELLED = "cancelled"; // Cancelled
     
     /**
      * Full constructor

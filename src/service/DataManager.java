@@ -7,11 +7,8 @@
 
 package service;
 
-import model.*;
 import adt.MenuHashTable;
-import adt.OrderQueue;
 import adt.MenuBST;
-import java.util.*;
 
 /**
  * Data Manager Class
@@ -55,7 +52,7 @@ public class DataManager {
      * Features:
      * - FIFO for same priority orders
      * - Higher priority orders processed first
-     * - VIP (3) > Delivery (2) > Normal (1)
+     * - VIP (1) > Delivery (2) > Normal (3)
      */
     public static OrderQueue orderQueue = new OrderQueue();
     
@@ -90,13 +87,6 @@ public class DataManager {
      */
     public static String getOrderQueueStatistics() {
         return orderQueue.getQueueStatistics();
-    }
-    
-    /**
-     * Print all orders in queue (for debugging)
-     */
-    public static void printOrderQueue() {
-        orderQueue.printAllOrders();
     }
     
     /**

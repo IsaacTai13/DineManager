@@ -2,6 +2,8 @@ package impl;
 
 import adt.PriorityQueueADT;
 
+import java.util.List;
+
 /**
  * Implementation of a Priority Queue using a Min Heap
  * This class accepts generic type T to allow flexibility in the type of elements stored.
@@ -43,5 +45,9 @@ public class HeapPriorityQueue<T extends Comparable<T>> implements PriorityQueue
     @Override
     public boolean isEmpty() {
         return heap.size() == 0;
+    }
+
+    public List<T> getAllElements() {
+        return heap.toList();
     }
 }
