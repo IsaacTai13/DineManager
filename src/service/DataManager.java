@@ -55,6 +55,12 @@ public class DataManager {
      * - VIP (1) > Delivery (2) > Normal (3)
      */
     public static OrderQueue orderQueue = new OrderQueue();
+
+    /**
+     * Processed Order
+     * Stores all the processed orders after kitchen moves them out of the order queue
+     */
+    public static ProcessedOrder processedOrder = new ProcessedOrder();
     
     /**
      * Order Number Counter
