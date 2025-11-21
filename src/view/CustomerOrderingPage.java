@@ -27,7 +27,7 @@ public class CustomerOrderingPage {
     private Scene scene;
     private Scene mainScene;
 
-    // Controller - handles all business logic
+    // Controller - handles all business logic of customer ordering
     private CustomerOrderingController controller;
 
     // UI Components
@@ -36,6 +36,7 @@ public class CustomerOrderingPage {
     private TextField searchField;
     private Label totalLabel;
     private Button checkoutButton;
+    private ComboBox<String> orderTypeComboBox; // Dropdown for order type
 
     // Constructor
     public CustomerOrderingPage(Stage stage, Scene mainScene) {
@@ -126,18 +127,17 @@ public class CustomerOrderingPage {
 
         TableColumn<MenuItem, String> nameCol = new TableColumn<>("Item Name");
         nameCol.setPrefWidth(200);
-        nameCol.setCellValueFactory(data -> 
-            new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
+        nameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
 
         TableColumn<MenuItem, String> priceCol = new TableColumn<>("Price");
         priceCol.setPrefWidth(100);
-        priceCol.setCellValueFactory(data -> 
-            new javafx.beans.property.SimpleStringProperty(data.getValue().getFormattedPrice()));
+        priceCol.setCellValueFactory(
+                data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getFormattedPrice()));
 
         TableColumn<MenuItem, String> categoryCol = new TableColumn<>("Category");
         categoryCol.setPrefWidth(120);
-        categoryCol.setCellValueFactory(data -> 
-            new javafx.beans.property.SimpleStringProperty(data.getValue().getCategory()));
+        categoryCol.setCellValueFactory(
+                data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getCategory()));
 
         menuTable.getColumns().addAll(nameCol, priceCol, categoryCol);
 
@@ -171,15 +171,13 @@ public class CustomerOrderingPage {
         // Item column
         TableColumn<OrderItem, String> nameCol = new TableColumn<>("Item");
         nameCol.setPrefWidth(120);
-        nameCol.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(
+        nameCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
                 cellData.getValue().getMenuItem().getName()));
 
         // Quantity column with +/- buttons
         TableColumn<OrderItem, OrderItem> qtyCol = new TableColumn<>("Quantity");
         qtyCol.setPrefWidth(120);
-        qtyCol.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue()));
+        qtyCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue()));
         qtyCol.setCellFactory(col -> new TableCell<OrderItem, OrderItem>() {
             private final Button minusBtn = new Button("-");
             private final Label qtyLabel = new Label();
@@ -224,8 +222,7 @@ public class CustomerOrderingPage {
         // Subtotal column
         TableColumn<OrderItem, String> subtotalCol = new TableColumn<>("Subtotal");
         subtotalCol.setPrefWidth(80);
-        subtotalCol.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(
+        subtotalCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
                 cellData.getValue().getFormattedSubtotal()));
 
         cartTable.getColumns().addAll(nameCol, qtyCol, subtotalCol);
@@ -245,6 +242,22 @@ public class CustomerOrderingPage {
 
         actionButtons.getChildren().addAll(removeBtn, clearBtn);
 
+        // Order Type Selection (Dropdown/ComboBox)
+        HBox orderTypeSection = new HBox(10);
+        orderTypeSection.setAlignment(Pos.CENTER);
+
+        Label orderTypeLabel = new Label("Order Type:");
+        orderTypeLabel.setFont(new Font("Arial", 14));
+        orderTypeLabel.setStyle("-fx-font-weight: bold;");
+
+        orderTypeComboBox = new ComboBox<>();
+        orderTypeComboBox.getItems().addAll("🍽️ Dine In", "🚚 Delivery");
+        orderTypeComboBox.setValue("🍽️ Dine In"); // Default selection
+        orderTypeComboBox.setPrefWidth(150);
+        orderTypeComboBox.setStyle("-fx-font-size: 14px;");
+
+        orderTypeSection.getChildren().addAll(orderTypeLabel, orderTypeComboBox);
+
         // Total price label
         totalLabel = new Label("Total: $0");
         totalLabel.setFont(new Font("Arial", 18));
@@ -257,7 +270,18 @@ public class CustomerOrderingPage {
         checkoutButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px;");
         checkoutButton.setOnAction(e -> handleCheckout());
 
-        panel.getChildren().addAll(cartTitle, cartTable, actionButtons, totalLabel, checkoutButton);
+        // Create a VBox for total and checkout to center them
+        VBox checkoutSection = new VBox(15);
+        checkoutSection.setAlignment(Pos.CENTER); // vertical center
+        checkoutSection.getChildren().addAll(totalLabel, checkoutButton);
+
+        panel.getChildren().addAll(
+                cartTitle,
+                cartTable,
+                actionButtons,
+                orderTypeSection,
+                checkoutSection // vertical center with all element inside
+        );
         return panel;
     }
 
@@ -370,15 +394,43 @@ public class CustomerOrderingPage {
             return;
         }
 
-        // Create order
-        Order order = controller.checkout();
+        // Get selected order type (save it before checkout)
+        String orderType = orderTypeComboBox.getValue();
+
+        // Check if order type is selected
+        if (orderType == null || orderType.isEmpty()) {
+            showAlert("Order Type Required", "Please select an order type (Dine In or Delivery).");
+            return;
+        }
+
+        // Determine priority based on order type
+        int priority;
+        if ("Delivery".equals(orderType)) {
+            priority = Order.PRIORITY_DELIVERY; // Delivery has higher priority
+        } else {
+            priority = Order.PRIORITY_NORMAL; // Dine In is normal priority
+        }
+
+        // Create order with appropriate priority
+        Order order = controller.checkout(priority);
 
         if (order != null) {
-            showAlert("Order Placed",
-                    String.format("Order #%03d has been placed successfully!\nTotal: %s",
-                            order.getOrderNumber(),
-                            order.getFormattedTotalPrice()));
+            // First: Update cart display (clears the cart)
             updateCartDisplay();
+
+            // Second: Reset order type to default for next order
+            orderTypeComboBox.setValue("🍽️ Dine In");
+
+            // Third: Show success message
+            showAlert("Order Placed",
+                    String.format("Order #%03d has been placed successfully!\n" +
+                            "Order Type: %s\n" +
+                            "Priority: %s\n" +
+                            "Total: %s",
+                            order.getOrderNumber(),
+                            orderType,
+                            order.getPriorityText(),
+                            order.getFormattedTotalPrice()));
         } else {
             showAlert("Checkout Failed", "Unable to process your order.");
         }

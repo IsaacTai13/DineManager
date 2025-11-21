@@ -139,7 +139,7 @@ public class OrderQueue {
 
     public String getQueueStatistics() {
         StringBuilder stats = new StringBuilder();
-        stats.append("Queue Statistics (FIFO):\n");
+        stats.append("Queue Statistics:\n");
         stats.append("Total orders: ").append(size()).append("\n");
         stats.append("Waiting: ").append(countOrdersByStatus(Order.STATUS_WAITING)).append("\n");
         stats.append("Cooking: ").append(countOrdersByStatus(Order.STATUS_COOKING)).append("\n");
@@ -153,7 +153,7 @@ public class OrderQueue {
     }
 
     public void printAllOrders() {
-        System.out.println("\n=== Order Queue (FIFO) ===");
+        System.out.println("\n=== Order Queue ===");
         System.out.println("Total orders: " + size());
 
         if (isEmpty()) {
