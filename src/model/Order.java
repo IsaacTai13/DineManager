@@ -92,7 +92,19 @@ public class Order implements Comparable<Order> {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
+    public void setStatusCooking() {
+        this.status = STATUS_COOKING;
+    }
+
+    public void setStatusDone() {
+        this.status = STATUS_DONE;
+    }
+
+    public void setStatusCancelled() {
+        this.status = STATUS_CANCELLED;
+    }
+
     // ==================== Order Operation Methods ====================
     
     /**
@@ -171,36 +183,30 @@ public class Order implements Comparable<Order> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         return timestamp.format(formatter);
     }
-    
+
     /**
      * Get priority text
      */
     public String getPriorityText() {
-        switch (priority) {
-            case PRIORITY_VIP:
-                return "VIP";
-            case PRIORITY_DELIVERY:
-                return "Delivery";
-            case PRIORITY_NORMAL:
-            default:
-                return "Normal (Dine in)";
-        }
+        return switch (priority) {
+            case PRIORITY_VIP -> "VIP";
+            case PRIORITY_DELIVERY -> "Delivery";
+            case PRIORITY_NORMAL -> "Dine-in/Takeaway";
+            default -> "Unknown";
+        };
     }
     
     /**
      * Get status text
      */
     public String getStatusText() {
-        switch (status) {
-            case STATUS_WAITING:
-                return "Waiting";
-            case STATUS_COOKING:
-                return "Cooking";
-            case STATUS_DONE:
-                return "Done";
-            default:
-                return status;
-        }
+        return switch (status) {
+            case STATUS_WAITING -> "Waiting";
+            case STATUS_COOKING -> "Cooking";
+            case STATUS_DONE -> "Done";
+            case STATUS_CANCELLED -> "Cancelled";
+            default -> "Unknown";
+        };
     }
     
     /**
