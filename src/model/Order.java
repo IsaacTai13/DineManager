@@ -24,7 +24,7 @@ public class Order implements Comparable<Order> {
     private String status;                      // Status (waiting/cooking/done)
     
     // Priority constants
-    public static final int PRIORITY_NORMAL = 3;      // Normal order
+    public static final int PRIORITY_NORMAL = 3;      // Normal order (Dine in)
     public static final int PRIORITY_DELIVERY = 2;    // Delivery order
     public static final int PRIORITY_VIP = 1;         // VIP order
     
@@ -183,7 +183,7 @@ public class Order implements Comparable<Order> {
                 return "Delivery";
             case PRIORITY_NORMAL:
             default:
-                return "Normal";
+                return "Normal (Dine in)";
         }
     }
     
