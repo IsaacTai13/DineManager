@@ -252,7 +252,7 @@ public class CustomerOrderingPage {
 
         orderTypeComboBox = new ComboBox<>();
         orderTypeComboBox.getItems().addAll("🍽️ Dine In", "🚚 Delivery");
-        orderTypeComboBox.setValue("Dine In"); // Default selection
+        orderTypeComboBox.setValue("🍽️ Dine In"); // Default selection
         orderTypeComboBox.setPrefWidth(150);
         orderTypeComboBox.setStyle("-fx-font-size: 14px;");
 
@@ -270,18 +270,17 @@ public class CustomerOrderingPage {
         checkoutButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px;");
         checkoutButton.setOnAction(e -> handleCheckout());
 
-//        panel.getChildren().addAll(cartTitle, cartTable, actionButtons, orderTypeSection, totalLabel, checkoutButton);
-        // put Total and Checkout into VBox
+        // Create a VBox for total and checkout to center them
         VBox checkoutSection = new VBox(15);
-        checkoutSection.setAlignment(Pos.CENTER);  // vertical center
+        checkoutSection.setAlignment(Pos.CENTER); // vertical center
         checkoutSection.getChildren().addAll(totalLabel, checkoutButton);
 
         panel.getChildren().addAll(
-            cartTitle, 
-            cartTable, 
-            actionButtons, 
-            orderTypeSection, 
-            checkoutSection    // vertical center with all element inside
+                cartTitle,
+                cartTable,
+                actionButtons,
+                orderTypeSection,
+                checkoutSection // vertical center with all element inside
         );
         return panel;
     }
@@ -395,8 +394,14 @@ public class CustomerOrderingPage {
             return;
         }
 
-        // Get selected order type
+        // Get selected order type (save it before checkout)
         String orderType = orderTypeComboBox.getValue();
+
+        // Check if order type is selected
+        if (orderType == null || orderType.isEmpty()) {
+            showAlert("Order Type Required", "Please select an order type (Dine In or Delivery).");
+            return;
+        }
 
         // Determine priority based on order type
         int priority;
@@ -410,6 +415,13 @@ public class CustomerOrderingPage {
         Order order = controller.checkout(priority);
 
         if (order != null) {
+            // First: Update cart display (clears the cart)
+            updateCartDisplay();
+
+            // Second: Reset order type to default for next order
+            orderTypeComboBox.setValue("🍽️ Dine In");
+
+            // Third: Show success message
             showAlert("Order Placed",
                     String.format("Order #%03d has been placed successfully!\n" +
                             "Order Type: %s\n" +
@@ -419,10 +431,6 @@ public class CustomerOrderingPage {
                             orderType,
                             order.getPriorityText(),
                             order.getFormattedTotalPrice()));
-            updateCartDisplay();
-
-            // Reset order type to default after checkout
-            orderTypeComboBox.setValue("Dine In");
         } else {
             showAlert("Checkout Failed", "Unable to process your order.");
         }
