@@ -1,9 +1,9 @@
 package impl;
 
 import adt.HashTableInterface;
+import adt.LinkedListInterface;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,14 +53,14 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         }
     }
     
-    // Array of LinkedLists (buckets) for separate chaining collision handling
+    // Array of MyLinkedLists (buckets) for separate chaining collision handling
     // 1. buckets is an array, each element in array is a linked list
-    // 2. each linked list store multiple Entry<K,V>（key–value pair）
+    // 2. each linked list store multiple Entry<K,V>(key-value pair)
     // 3. each bucket store all the key-value pairs whose keys hash to the same index
-    //    -  One bucket = one LinkedList<Entry<K,V>>
+    //    -  One bucket = one MyLinkedList<Entry<K,V>>
     
     
-    private LinkedList<Entry<K, V>>[] buckets;
+    private MyLinkedList<Entry<K, V>>[] buckets;
     private int capacity;           // Number of buckets
     private int size;               // Number of entries
     
@@ -76,11 +76,11 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
     public MyHashTable() {
         this.capacity = DEFAULT_CAPACITY;
         this.size = 0;
-        this.buckets = new LinkedList[capacity];
+        this.buckets = new MyLinkedList[capacity];
         
-        // Initialize each bucket as an empty LinkedList
+        // Initialize each bucket as an empty MyLinkedList
         for (int i = 0; i < capacity; i++) {
-            buckets[i] = new LinkedList<>();
+            buckets[i] = new MyLinkedList<>();
         }
     }
     
@@ -92,10 +92,10 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
     public MyHashTable(int initialCapacity) {
         this.capacity = initialCapacity;
         this.size = 0;
-        this.buckets = new LinkedList[capacity];
+        this.buckets = new MyLinkedList[capacity];
         
         for (int i = 0; i < capacity; i++) {
-            buckets[i] = new LinkedList<>();
+            buckets[i] = new MyLinkedList<>();
         }
     }
     
@@ -126,10 +126,11 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         
         // Step 1: Calculate bucket index using hash function
         int index = hash(key);
-        LinkedList<Entry<K, V>> bucket = buckets[index];
+        MyLinkedList<Entry<K, V>> bucket = buckets[index];
         
         // Step 2: Check if key already exists (update case)
-        for (Entry<K, V> entry : bucket) {
+        for (int i = 0; i < bucket.size(); i++) {
+            Entry<K, V> entry = bucket.get(i);
             if (entry.key.equals(key)) {
                 entry.value = value;  // Update existing value
                 return;
@@ -155,10 +156,11 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         
         // Step 1: Calculate bucket index
         int index = hash(key);
-        LinkedList<Entry<K, V>> bucket = buckets[index];
+        MyLinkedList<Entry<K, V>> bucket = buckets[index];
         
         // Step 2: Linear search within the bucket
-        for (Entry<K, V> entry : bucket) {
+        for (int i = 0; i < bucket.size(); i++) {
+            Entry<K, V> entry = bucket.get(i);
             if (entry.key.equals(key)) {
                 return entry.value;  // Found!
             }
@@ -182,13 +184,14 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         
         // Step 1: Find the bucket
         int index = hash(key);
-        LinkedList<Entry<K, V>> bucket = buckets[index];
+        MyLinkedList<Entry<K, V>> bucket = buckets[index];
         
         // Step 2: Find and remove the entry
-        for (Entry<K, V> entry : bucket) {
+        for (int i = 0; i < bucket.size(); i++) {
+            Entry<K, V> entry = bucket.get(i);
             if (entry.key.equals(key)) {
                 V value = entry.value;
-                bucket.remove(entry);
+                bucket.remove(i);  // Remove by index
                 size--;
                 return value;
             }
@@ -225,9 +228,11 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         List<V> values = new ArrayList<>();
         
         // Iterate through all buckets
-        for (LinkedList<Entry<K, V>> bucket : buckets) {
+        for (int i = 0; i < capacity; i++) {
+            MyLinkedList<Entry<K, V>> bucket = buckets[i];
             // Iterate through all entries in each bucket
-            for (Entry<K, V> entry : bucket) {
+            for (int j = 0; j < bucket.size(); j++) {
+                Entry<K, V> entry = bucket.get(j);
                 values.add(entry.value);
             }
         }
@@ -240,8 +245,10 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
     public List<K> getAllKeys() {
         List<K> keys = new ArrayList<>();
         
-        for (LinkedList<Entry<K, V>> bucket : buckets) {
-            for (Entry<K, V> entry : bucket) {
+        for (int i = 0; i < capacity; i++) {
+            MyLinkedList<Entry<K, V>> bucket = buckets[i];
+            for (int j = 0; j < bucket.size(); j++) {
+                Entry<K, V> entry = bucket.get(j);
                 keys.add(entry.key);
             }
         }
@@ -264,20 +271,22 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         System.out.println("Resizing hash table from " + capacity + " to " + (capacity * 2));
         
         // Save old buckets
-        LinkedList<Entry<K, V>>[] oldBuckets = buckets;
+        MyLinkedList<Entry<K, V>>[] oldBuckets = buckets;
         int oldCapacity = capacity;
         
         // Create new larger buckets (double the size)
         capacity *= 2;
-        buckets = new LinkedList[capacity];
+        buckets = new MyLinkedList[capacity];
         for (int i = 0; i < capacity; i++) {
-            buckets[i] = new LinkedList<>();
+            buckets[i] = new MyLinkedList<>();
         }
         
         // Rehash all entries from old buckets to new buckets
         size = 0;  // Reset size, will be incremented in put()
         for (int i = 0; i < oldCapacity; i++) {
-            for (Entry<K, V> entry : oldBuckets[i]) {
+            MyLinkedList<Entry<K, V>> bucket = oldBuckets[i];
+            for (int j = 0; j < bucket.size(); j++) {
+                Entry<K, V> entry = bucket.get(j);
                 put(entry.key, entry.value);  // Rehash with new capacity
             }
         }
@@ -320,7 +329,8 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         int maxChainLength = 0;
         int totalChainLength = 0;
         
-        for (LinkedList<Entry<K, V>> bucket : buckets) {
+        for (int i = 0; i < capacity; i++) {
+            MyLinkedList<Entry<K, V>> bucket = buckets[i];
             int chainLength = bucket.size();
             if (chainLength == 0) {
                 emptyBuckets++;
@@ -352,7 +362,7 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
         for (int i = 0; i < bucketsToShow; i++) {
             System.out.print("Bucket " + i + ": ");
             
-            LinkedList<Entry<K, V>> bucket = buckets[i];
+            MyLinkedList<Entry<K, V>> bucket = buckets[i];
             if (bucket.isEmpty()) {
                 System.out.println("[]");
             } else {
@@ -386,7 +396,9 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
             System.out.println("Hash table is empty");
         } else {
             for (int i = 0; i < capacity; i++) {
-                for (Entry<K, V> entry : buckets[i]) {
+                MyLinkedList<Entry<K, V>> bucket = buckets[i];
+                for (int j = 0; j < bucket.size(); j++) {
+                    Entry<K, V> entry = bucket.get(j);
                     System.out.println("Key: " + entry.key + " | Value: " + entry.value);
                 }
             }
