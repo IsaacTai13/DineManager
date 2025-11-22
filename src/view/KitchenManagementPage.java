@@ -430,16 +430,14 @@ public class KitchenManagementPage {
      */
     private void updateButtonStates(Order order) {
 
-        int waitingCount = DataManager.orderQueue.size();
-        int cookingCount = DataManager.processedOrder.getCountCooking();
+
 
         // Case 1: No waiting or cooking orders
-        if (order == null && waitingCount == 0 && cookingCount == 0) {
-            btnStart.setDisable(true);
+        if (order == null) {
+            setStartBtnState();
             btnFinish.setDisable(true);
             btnCancel.setDisable(true);
 
-            setStyle(btnStart, BtnStyle.GREY);
             setStyle(btnFinish, BtnStyle.GREY);
             setStyle(btnCancel, BtnStyle.GREY);
             return;
@@ -447,13 +445,7 @@ public class KitchenManagementPage {
 
         // Case 2: There are waiting order but no cooking order
         if (order != null && Order.STATUS_WAITING.equals(order.getStatus())) {
-            if (waitingCount > 0 && cookingCount < MAX_COOKING_ORDERS) {
-                btnStart.setDisable(false);
-                setStyle(btnStart, BtnStyle.BLUE);
-            } else {
-                btnStart.setDisable(true);
-                setStyle(btnStart, BtnStyle.GREY);
-            }
+            setStartBtnState();
 
             // Finish disabled
             btnFinish.setDisable(true);
@@ -467,13 +459,7 @@ public class KitchenManagementPage {
 
         // Case 3: There is a cooking order
         if (order != null && Order.STATUS_COOKING.equals(order.getStatus())) {
-            if (waitingCount > 0 && cookingCount < MAX_COOKING_ORDERS) {
-                btnStart.setDisable(false);
-                setStyle(btnStart, BtnStyle.BLUE);
-            } else {
-                btnStart.setDisable(true);
-                setStyle(btnStart, BtnStyle.GREY);
-            }
+            setStartBtnState();
 
             // Finish disabled
             btnFinish.setDisable(false);
@@ -482,6 +468,31 @@ public class KitchenManagementPage {
             // Waiting order can be cancelled
             btnCancel.setDisable(false);
             setStyle(btnCancel, BtnStyle.RED);
+        }
+
+        // Case 4: Other statuses (DONE, CANCELLED) - disable all buttons
+        if (order != null &&
+            (Order.STATUS_DONE.equals(order.getStatus()) ||
+             Order.STATUS_CANCELLED.equals(order.getStatus()))) {
+
+            setStartBtnState();
+            btnFinish.setDisable(true);
+            btnCancel.setDisable(true);
+            setStyle(btnFinish, BtnStyle.GREY);
+            setStyle(btnCancel, BtnStyle.GREY);
+        }
+    }
+
+    private void setStartBtnState() {
+        int waitingCount = DataManager.orderQueue.size();
+        int cookingCount = DataManager.processedOrder.getCountCooking();
+
+        if (waitingCount > 0 && cookingCount < MAX_COOKING_ORDERS) {
+            btnStart.setDisable(false);
+            setStyle(btnStart, BtnStyle.BLUE);
+        } else {
+            btnStart.setDisable(true);
+            setStyle(btnStart, BtnStyle.GREY);
         }
     }
 
