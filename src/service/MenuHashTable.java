@@ -1,5 +1,6 @@
-package adt;
+package service;
 
+import impl.MyHashTable;
 import model.MenuItem;
 import java.util.ArrayList;
 import java.util.List;

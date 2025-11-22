@@ -1,7 +1,7 @@
 package view;
 
 import adt.HashTableInterface;
-import adt.MyHashTable;
+import impl.MyHashTable;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;

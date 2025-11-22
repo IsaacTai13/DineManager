@@ -58,25 +58,6 @@ public class ProcessedOrder {
         return getCountByStatus(Order.STATUS_COOKING);
     }
 
-    public String getPriorityByOrderNum(int orderNum) {
-        int priority = -1;
-        Order order = getOrderByOrderNum(orderNum);
-        if (order != null) {
-            priority = order.getPriority();
-        }
-
-        switch (priority) {
-            case 1:
-                return "VIP";
-            case 2:
-                return "Delivery";
-            case 3:
-                return "Dine-in/Takeaway";
-            default:
-                return "Unknown";
-        }
-    }
-
     public Order getOrderByOrderNum(int orderNum) {
         for (Order order : processedOrders) {
             if (order.getOrderNumber() == orderNum) {
@@ -87,39 +68,7 @@ public class ProcessedOrder {
         return null;
     }
 
-    /**
-     * Set Order to finished based on order number
-     */
-    public void setOrderFinished(int orderNum) {
-        Order order = getOrderByOrderNum(orderNum);
-        order.setStatusDone();
-    }
-
-    /**
-     * Set Order to cancelled based on order number
-     */
-    public void setOrderCancelled(int orderNum) {
-        Order order = getOrderByOrderNum(orderNum);
-        order.setStatusCancelled();
-    }
-
-    /**
-     * Set Order to cooking based on order number
-     */
-    public void setOrderCooking(int orderNum) {
-        Order order = getOrderByOrderNum(orderNum);
-        order.setStatusCooking();
-    }
-
     public List<Order> getProcessedOrders() {
         return processedOrders;
-    }
-
-    public int getOrderItemCount() {
-        int itemCount = 0;
-        for (Order order : processedOrders) {
-            itemCount += order.getItems().size();
-        }
-        return itemCount;
     }
 }

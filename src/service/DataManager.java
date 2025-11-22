@@ -7,9 +7,6 @@
 
 package service;
 
-import adt.MenuHashTable;
-import adt.MenuBST;
-
 /**
  * Data Manager Class
  * Only responsible for declaring and storing all shared data structures

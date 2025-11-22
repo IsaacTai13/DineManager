@@ -1,4 +1,5 @@
-package adt;
+package service;
+import impl.BST;
 import model.MenuItem;
 import java.util.ArrayList;
 import java.util.List;

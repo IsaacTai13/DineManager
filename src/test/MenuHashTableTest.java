@@ -1,7 +1,6 @@
 package test;
 
-import adt.MenuHashTable;
-import adt.HashTableInterface;
+import service.MenuHashTable;
 import model.MenuItem;
 import java.util.List;
 
