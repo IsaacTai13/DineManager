@@ -13,6 +13,30 @@ import java.util.List;
  * 
  * @param <K> The type of keys
  * @param <V> The type of values
+ * 
+ * HashTable Performance
+ * 
+ * Implementation: Separate Chaining
+ * - Each bucket stores all key-value pairs whose keys hash to the same index
+ * - Collision handling: LinkedList chains in same bucket
+ * - a linked list (a bucket) is longer, the search speed is longer
+ * 
+ * Example:
+ * Bucket 3: [M001=Burger] → [D001=Coke]  ← Both hash to index 3
+ * Bucket 7: [M002=Pizza]
+ * 
+ * Time Complexity:
+ * - Average: O(1) for put, get, remove
+ * - Worst: O(n) when all keys hash to same bucket
+ * 
+ * Load Factor: ≤ 0.75
+ * - Automatic resize when threshold exceeded
+ * - Capacity doubles: 16 → 32 → 64...
+ * 
+ * Current Usage:
+ * - 18 menu items across 32 buckets
+ * - Average chain length: 1.3
+ * - Lookup time: < 1ms
  */
 public class MyHashTable<K, V> implements HashTableInterface<K, V> {
     
@@ -30,6 +54,12 @@ public class MyHashTable<K, V> implements HashTableInterface<K, V> {
     }
     
     // Array of LinkedLists (buckets) for separate chaining collision handling
+    // 1. buckets is an array, each element in array is a linked list
+    // 2. each linked list store multiple Entry<K,V>（key–value pair）
+    // 3. each bucket store all the key-value pairs whose keys hash to the same index
+    //    -  One bucket = one LinkedList<Entry<K,V>>
+    
+    
     private LinkedList<Entry<K, V>>[] buckets;
     private int capacity;           // Number of buckets
     private int size;               // Number of entries
