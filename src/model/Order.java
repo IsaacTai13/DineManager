@@ -213,8 +213,9 @@ public class Order implements Comparable<Order> {
      * Get order summary (for display in list)
      */
     public String getSummary() {
-        return String.format("Order #%03d - %s - %d items - %s", 
-            orderNumber, 
+        return String.format("Order #%03d - priority: %d, %s - %d items - %s",
+            orderNumber,
+            getPriority(),
             getPriorityText(), 
             getItemCount(), 
             getFormattedTotalPrice());
