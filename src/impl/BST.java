@@ -1,4 +1,6 @@
-package adt;
+package impl;
+
+import adt.BSTInterface;
 
 import java.util.ArrayList;
 import java.util.Comparator;

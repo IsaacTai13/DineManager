@@ -3,6 +3,8 @@ package controller;
 import model.Order;
 import service.DataManager;
 
+import javax.xml.crypto.Data;
+
 /**
  *
  * @author tisaac
@@ -34,7 +36,13 @@ public class KitchenManagementController {
 
     public Order cancelOrder(Order order) {
         // update order status to 'cancelled'
-        order.setStatusCancelled();
+        if (order.getStatus().equals(Order.STATUS_WAITING)) {
+            // if the order status is waiting, it would be the top of the order queue
+            order = DataManager.orderQueue.poll();
+            DataManager.processedOrder.add(order); // move to processed orders
+        }
+
+        order.setStatusCancelled(); // set status to cancelled
         return moveOnToNext();
     }
 

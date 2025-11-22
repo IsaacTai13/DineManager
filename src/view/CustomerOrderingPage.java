@@ -1,5 +1,7 @@
 package view;
 
+import adt.HashTableInterface;
+import impl.MyHashTable;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,6 +16,7 @@ import model.MenuItem;
 import model.Order;
 import model.OrderItem;
 import controller.CustomerOrderingController;
+
 import java.util.List;
 
 /**
@@ -395,17 +398,21 @@ public class CustomerOrderingPage {
         }
 
         // Get selected order type (save it before checkout)
-        String orderType = orderTypeComboBox.getValue();
+        HashTableInterface<String, Integer> typeMap = new MyHashTable<>();
+        typeMap.put("🍽️ Dine In", 3);
+        typeMap.put("🚚 Delivery", 2);
+        String selected = orderTypeComboBox.getValue();
+        int code = typeMap.get(selected);
 
         // Check if order type is selected
-        if (orderType == null || orderType.isEmpty()) {
+        if (code > 3 || code < 1) {
             showAlert("Order Type Required", "Please select an order type (Dine In or Delivery).");
             return;
         }
 
         // Determine priority based on order type
         int priority;
-        if ("Delivery".equals(orderType)) {
+        if (Order.PRIORITY_DELIVERY == code) {
             priority = Order.PRIORITY_DELIVERY; // Delivery has higher priority
         } else {
             priority = Order.PRIORITY_NORMAL; // Dine In is normal priority
@@ -428,7 +435,7 @@ public class CustomerOrderingPage {
                             "Priority: %s\n" +
                             "Total: %s",
                             order.getOrderNumber(),
-                            orderType,
+                            order.getPriorityText(),
                             order.getPriorityText(),
                             order.getFormattedTotalPrice()));
         } else {

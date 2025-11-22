@@ -1,4 +1,6 @@
-package adt;
+package impl;
+
+import adt.HashTableInterface;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
