@@ -11,10 +11,13 @@ import java.util.List;
  * 1.	Wraps the generic MyHashTable<String, MenuItem> and provides
  * 		menu-specific operations 
  * 2. 	Add more menu-specific operations for class MenuHashTable
+ * 3.   DataManager.menuHashTable will access all the function in class MenuHashTable
  */
 public class MenuHashTable {
     
     // Internal generic hash table
+	// key: each menu item's id
+    // value: MenuItem object
     private MyHashTable<String, MenuItem> table;
     
     /**

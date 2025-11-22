@@ -23,6 +23,8 @@ public class MenuService {
         }
         
         // Add to both MenuHashTable ADT and BST
+        // key: each menu item's id
+        // value: MenuItem object
         DataManager.menuHashTable.put(item.getId(), item);
         DataManager.menuBST.insert(item);
         
