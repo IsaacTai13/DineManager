@@ -30,7 +30,7 @@ The core goal is to illustrate how hand-crafted data structures drive behavior i
   <img src="https://img.shields.io/badge/Data%20Structures-Heap%20%7C%20BST%20%7C%20HashTable-4CAF50" height="22"/>
 
   <!-- Algorithms -->
-  <img src="https://img.shields.io/badge/Algorithms-Priority%20Queue%20%7C%20Heapify%20%7C%20Merge%20Sort%20%7C%20Insertion%20Sort-9C27B0" height="22"/>
+  <img src="https://img.shields.io/badge/Algorithms-Priority%20Queue%20%7C%20Heapify%20%7C%20Merge%20Sort%20-9C27B0" height="22"/>
 </p>
 
 ## Contributors
@@ -85,9 +85,9 @@ Top-level directories and their purpose:
 This section explains the three primary custom structures used, how they are implemented, their time complexities, and why they were chosen.
 
 ### 3.1 `MyHashTable` (Hash Map)
-- Implementation: fixed-size bucket array with separate chaining (linked lists or dynamic buckets), resizing when load factor threshold crossed (e.g., 0.75).
+- Implementation: fixed-size bucket array with separate chaining using a custom linked list implementation (`adt/LinkedListInterface.java` + `impl/MyLinkedList.java`). Buckets resize when the load factor threshold is crossed (e.g., 0.75). See `impl/MyHashTable.java` for details.
 - Complexity: average O(1) for `put/get/remove`; worst-case O(n) if many collisions or poor hashing.
-- Why: constant-time lookups for menu items by id/name improves UI responsiveness (search, edits). Useful to compare hashing vs tree-based approaches.
+- Why: constant-time lookups for menu items by id/name improves UI responsiveness (search, edits). Using a hand-implemented linked list for buckets demonstrates both ADT layering and the trade-offs of separate chaining.
 
 ### 3.2 `HeapPriorityQueue` / `MinHeap` (Priority Queue)
 - Implementation: binary heap stored in an array; comparator orders by numeric priority (lower = higher urgency), then by timestamp to preserve FIFO for equal priorities.
