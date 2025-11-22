@@ -40,15 +40,51 @@ import java.util.List;
  * @author tisaac
  */
 public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
-    private ArrayList<T> elements; // I named it elements instead of heap because heap is entire class, arraylist is just the storage
-    private int size;
+    private T[] elements; // I named it elements instead of heap because heap is entire class, arraylist is just the storage
+    private int DEFAULT_CAPACITY = 3;
+    private int numberOfEntries = 0;
 
     /**
-     * Constructor - Initialize empty heap
+     * Creates the internal array used by the heap.
+     *
+     * <p>We must allocate the array as {@code new Comparable[capacity]} instead of
+     * {@code new Object[capacity]} because the generic type {@code T} is bounded as
+     * {@code T extends Comparable<T>}. That means every element stored in the heap
+     * must be a Comparable.</p>
+     *
+     * <p>If we allocate {@code new Object[]}, the JVM will treat it as an
+     * {@code Object[]} at runtime. Casting an {@code Object[]} to {@code T[]}
+     * (which is really a {@code Comparable[]} because of the type bound) will fail
+     * with a {@link ClassCastException}:</p>
+     *
+     * <pre>
+     * java.lang.ClassCastException:
+     *   Object[] cannot be cast to Comparable[]
+     * </pre>
+     *
+     * <p>This happens because array types in Java enforce runtime type checking.
+     * A {@code Comparable[]} can only store elements that implement
+     * {@link Comparable}, so it cannot be backed by an {@code Object[]} array.</p>
+     *
+     * <p>Therefore, we allocate the array like this:</p>
+     *
+     * <pre>
+     * this.elements = (T[]) new Comparable[capacity];
+     * </pre>
+     *
+     * <p>This is allowed because {@code Comparable[]} is a valid runtime type for
+     * {@code T[]} when {@code T extends Comparable<T>}.</p>
+     *
+     * <p>Why using an interface type (Comparable) works:</p>
+     * <p>
+     *  Although {@code Comparable} is an interface and cannot be instantiated,
+     *  creating {@code new Comparable[capacity]} is allowed because Java only
+     *  creates an array that is *typed* to hold objects implementing that interface.
+     *  The array stores references — not actual Comparable instances — so this is valid.</p>
      */
+    @SuppressWarnings("unchecked")
     public MinHeap() {
-        this.elements = new ArrayList<>();
-        this.size = 0;
+        this.elements = (T[]) new Comparable[DEFAULT_CAPACITY];
     }
 
     /**
@@ -59,9 +95,12 @@ public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
      */
     @Override
     public void insert(T item) {
-        elements.add(item);
-        size++;
-        heapifyUp(size - 1);
+        if (isFull()) {
+            doubleCapacity();
+        }
+        elements[numberOfEntries] = item;
+        numberOfEntries++;
+        heapifyUp(numberOfEntries - 1);
     }
 
     /**
@@ -72,14 +111,14 @@ public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
      */
     @Override
     public T removeMin() {
-        if (size == 0) return null;
+        if (numberOfEntries == 0) return null;
 
         // using get first is mandatory, if you use remove first, ArrayList will shift elements left
         // and mess up the order, so we first get the root element do the swap, then remove last element
-        T root = elements.get(0);
-        elements.set(0, elements.get(size - 1)); // move last element to root
-        elements.remove(size - 1); // remove last element
-        size--;
+        T root = elements[0];
+        elements[0] = elements[numberOfEntries - 1]; // move last element to root
+        elements[numberOfEntries - 1] = null; // avoid loitering
+        numberOfEntries--;
         heapifyDown(0);
         return root;
     }
@@ -90,18 +129,18 @@ public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
      */
     @Override
     public T peek() {
-        if (size == 0) return null;
-        return elements.get(0);
+        if (numberOfEntries == 0) return null;
+        return elements[0];
     }
 
     @Override
     public int size() {
-        return size;
+        return numberOfEntries;
     }
 
     @Override
     public boolean isEmpty() {
-        return size == 0;
+        return numberOfEntries == 0;
     }
 
     /**
@@ -113,11 +152,11 @@ public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
         // find parent index with (index - 1) / 2 formula
         int parentIndex = (index - 1) / 2;
 
-        while (index > 0 && elements.get(index).compareTo(elements.get(parentIndex)) < 0) {
+        while (index > 0 && elements[index].compareTo(elements[parentIndex]) < 0) {
             // swap
-            T temp = elements.get(index);
-            elements.set(index, elements.get(parentIndex));
-            elements.set(parentIndex, temp);
+            T temp = elements[index];
+            elements[index] = elements[parentIndex];
+            elements[parentIndex] = temp;
 
             index = parentIndex;
             parentIndex = (index - 1) / 2;
@@ -135,25 +174,25 @@ public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
         int smallestIndex = index;
 
         // in CBT, if there is another level, left child must exist
-        while (leftChildIndex < size) {
+        while (leftChildIndex < numberOfEntries) {
 
             // find smallest among index, left child, right child (left first)
-            if (elements.get(leftChildIndex).compareTo(elements.get(smallestIndex)) < 0) {
+            if (elements[leftChildIndex].compareTo(elements[smallestIndex]) < 0) {
                 smallestIndex = leftChildIndex;
             }
 
             // then check right child if exists and compare to current smallest
             // cause when performing heapify down, root will be swapped with smallest child
-            if (rightChildIndex < size && elements.get(rightChildIndex).compareTo(elements.get(smallestIndex)) < 0) {
+            if (rightChildIndex < numberOfEntries && elements[rightChildIndex].compareTo(elements[smallestIndex]) < 0) {
                 smallestIndex = rightChildIndex;
             }
 
             if (smallestIndex == index) return; // heap property satisfied
 
             // swap
-            T temp = elements.get(index);
-            elements.set(index, elements.get(smallestIndex));
-            elements.set(smallestIndex, temp);
+            T temp = elements[index];
+            elements[index] = elements[smallestIndex];
+            elements[smallestIndex] = temp;
 
             // move current index to the smallest index and continue heapifying down
             index = smallestIndex;
@@ -161,7 +200,39 @@ public class MinHeap<T extends Comparable<T>> implements HeapADT<T> {
         }
     }
 
+    private boolean isFull() {
+        return numberOfEntries >= elements.length;
+    }
+
+    private void doubleCapacity() {
+        @SuppressWarnings("unchecked")
+        T[] newArr = (T[]) new Comparable[elements.length * 2];
+
+        // copy elements to new array
+        for (int i = 0; i < elements.length; i++) {
+            newArr[i] = elements[i];
+        }
+
+        elements = newArr; // point to the new Array, so old one can be garbage collected
+    }
+
+    /**
+     * Returns a list view of the elements currently stored in the heap.
+     * <p>
+     * This method returns only the valid entries (0..numberOfEntries-1),
+     * avoiding internal null padding from the underlying array.
+     * Returning a List instead of a raw array prevents exposing the
+     * heap's internal storage structure and keeps the implementation
+     * properly encapsulated.
+     *
+     * @return a new List containing all active heap elements
+     */
     public List<T> toList() {
-        return new ArrayList<>(elements);
+        List<T> list = new ArrayList<>(numberOfEntries);
+
+        for (int i = 0; i < numberOfEntries; i++) {
+            list.add(elements[i]);
+        }
+        return list;
     }
 }
