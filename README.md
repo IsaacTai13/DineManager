@@ -38,7 +38,6 @@ The core goal is to illustrate how hand-crafted data structures drive behavior i
 [![Alvin](https://img.shields.io/badge/GitHub-linweihong--alvin-0366d6?logo=github&logoColor=white)](https://github.com/linweihong-alvin)
 [![Isaac](https://img.shields.io/badge/GitHub-IsaacTai13-6f42c1?logo=github&logoColor=white)](https://github.com/IsaacTai13)
 
-
 ---
 
 ## Table of Contents
@@ -76,7 +75,6 @@ The core goal is to illustrate how hand-crafted data structures drive behavior i
 - Automatic sorting by price using BST
 - Flexible sorting with Merge Sort
 - Performance measurement display
-
 
 ---
 
@@ -215,7 +213,6 @@ Key concepts (concise, non-verbatim):
 
 ---
 
-
 ## 7. 🚀 How to Run
 
 ### Prerequisites
@@ -238,10 +235,6 @@ The system loads 18 pre-defined menu items on startup:
 
 ---
 
-
-
----
-
 ## 8. 📈 Performance Results
 
 ### BST Operations
@@ -261,10 +254,6 @@ The system loads 18 pre-defined menu items on startup:
 
 ---
 
-
-
----
-
 ## 9. 🔮 Future Enhancements
 
 - Database persistence for data durability
@@ -273,5 +262,3 @@ The system loads 18 pre-defined menu items on startup:
 - Real-time notifications for new orders
 - Mobile application integration
 - Advanced reporting and statistics
-
----
