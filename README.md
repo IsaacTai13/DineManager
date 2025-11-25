@@ -216,22 +216,41 @@ Key concepts (concise, non-verbatim):
 ## 7. 🚀 How to Run
 
 ### Prerequisites
-- Java JDK 11 or higher
-- JavaFX SDK
-- Eclipse IDE (or any Java IDE)
 
-### Steps
-1. Clone or download the project
-2. Import into Eclipse as Java Project
-3. Configure JavaFX library in Build Path
-4. Run `Main.java` in `application` package
-5. Click buttons to navigate between modules
+- Java JDK 17+ installed (`java -version`)
+- JavaFX SDK matching your JDK downloaded and unzipped
+- An IDE (IntelliJ IDEA / Eclipse) or terminal (macOS)
 
-### Initial Data
-The system loads 18 pre-defined menu items on startup:
-- 7 Main Dishes ($100 - $350)
-- 6 Beverages ($30 - $70)
-- 5 Desserts ($60 - $90)
+> Important: wherever you see `/path/to/javafx-sdk-XX/lib` below, replace it with the actual path to your JavaFX SDK `lib` folder on your machine.
+
+### Main entry point
+
+- Main class: `application.Main`
+
+### Run in Eclipse (macOS)
+
+1. Import project: `File` \-> `Import` \-> `Existing Projects into Workspace` (or use Gradle/Maven import if applicable).
+2. Project JDK: `Project` \-> `Properties` \-> `Java Compiler` / `Java Build Path` -> set to Java 17+.
+3. Add JavaFX JARs: `Project` \-> `Properties` \-> `Java Build Path` \-> `Libraries` \-> `Modulepath` \-> `Add External JARs...` -> select all JARs in `/path/to/javafx-sdk-XX/lib`.
+4. Run Configuration: `Run` \-> `Run Configurations...` \-> `Java Application`:
+    - Project: select project
+    - Main class: `application.Main`
+    - VM arguments:
+      ```
+      --module-path /Users/tisaac/javafx/javafx-sdk-21.0.9/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base
+      ```
+
+### Compile & Run from Terminal (macOS)
+Use this single command in the project root (replace the module path with your JavaFX SDK `lib` path). It compiles to `bin` then runs `application.Main`:
+
+```aiignore
+javac -d bin --module-path "/path/to/javafx-sdk-XX/lib"
+--add-modules javafx.controls,javafx.fxml
+$(find src -name "*.java") &&
+java --module-path "/path/to/javafx-sdk-XX/lib"
+--add-modules javafx.controls,javafx.fxml,javafx.graphics
+-cp bin application.Main
+```
 
 ---
 
