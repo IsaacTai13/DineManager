@@ -1,0 +1,20 @@
+How to Run
+
+Prerequisites
+
+	•	Java JDK 11 or higher
+	•	JavaFX SDK
+	•	Eclipse IDE (or any Java IDE)
+Steps
+
+	1	Clone or download the project
+	2	Import into Eclipse as Java Project
+	3	Configure JavaFX library in Build Path
+	4	Run Main.java in application package
+	5	Click buttons to navigate between modules
+Initial Data
+
+The system loads 18 pre-defined menu items on startup:
+	•	7 Main Dishes ($100 - $350)
+	•	6 Beverages ($30 - $70)
+	•	5 Desserts ($60 - $90)
